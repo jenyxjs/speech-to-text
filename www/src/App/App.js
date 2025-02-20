@@ -5,7 +5,7 @@ import { Layout } from './Layout.js';
 import { SpeechRecognition } from '../SpeechRecognition/SpeechRecognition.js';
 
 export class App extends AbstractApp {
-	constructor(root) {
+	constructor() {
 		super({
 			initCssTheme: {
 				class: InitCssTheme,
@@ -24,4 +24,4 @@ export class App extends AbstractApp {
 	}
 }
 
-new App(window);
+new App();

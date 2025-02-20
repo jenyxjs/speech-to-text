@@ -4,11 +4,15 @@
 
 # Speech to Text
 
-The Jenyx library provides universal components for creating various applications in JavaScript.
+**Speech to Text** is an application developed using the [Jenyx](https://github.com/jenyxjs/jenyx) library. It provides a user-friendly interface to convert speech into text using modern web technologies.
 
-This screenshot demonstrates the main interface of the Speech to Text application, showcasing its layout and core functionality.
+The screenshot below demonstrates the main interface of the Speech to Text application, showcasing its layout and core functionality:
 
 ![Screenshot](docs/screenshot.png)
+
+## Code Overview
+
+Here’s a brief overview of the main components and their roles in the application:
 
 ```js
 export class App extends AbstractApp {
@@ -32,12 +36,12 @@ export class App extends AbstractApp {
 }
 ```
 
-Visit the [live demo](https://jenyxjs.github.io/speech-to-text/www/app.html) to see it in action.
+To see the application in action, visit the live demo [live demo](https://jenyxjs.github.io/speech-to-text/www/app.html).
 
 
 ## Library Repository
 
-Visit the [library repository](https://github.com/jenyxjs/jenyx) to learn more about the project, its documentation
+For more information about the project, documentation, and contribution guidelines, please visit the [Jenyx library repository](https://github.com/jenyxjs/jenyx).
 
 ## License
 
