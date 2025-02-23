@@ -14,13 +14,17 @@ export class Button extends ActiveControl {
                 'color: var(--jn-text)',
                 'fill: var(--jn-text)',
                 'box-sizing: border-box',
-                'border-radius: 3rem',
-                'padding: .5rem',
+                'border-radius: 2.5rem',
+                'padding: .7rem',
                 'width: 3rem',
+                'filter: none',
             ],
             styleSet: {
                 hovered: [
                     'filter: brightness(1.05)',
+                ],
+                selected: [
+                    'filter: drop-shadow(0px 0px 2px black)',
                 ],
             },
             options

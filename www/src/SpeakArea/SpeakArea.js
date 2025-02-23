@@ -4,7 +4,6 @@ import { Textarea } from '../Input/Textarea.js';
 import { Button } from '../App/Button.js';
 import { MIC_SVG } from '../Assert/MIC_SVG.js';
 import { COPY_SVG } from '../Assert/COPY_SVG.js';
-import { OFF_SVG } from '../Assert/OFF_SVG.js';
 
 export class SpeakArea extends Control {
     constructor(options) {
@@ -31,10 +30,6 @@ export class SpeakArea extends Control {
                         micButton: {
                             class: Button,
                             text: MIC_SVG,
-                        },
-                        offButton: {
-                            class: Button,
-                            text: OFF_SVG,
                         },
                         copyButton: {
                             class: Button,
@@ -65,11 +60,8 @@ export class SpeakArea extends Control {
         this.textArea.bind('text', this, 'refresh', { run: true });
 
         this.panel.micButton.on('click', event => {
-            this.speechRecognition.isRun = true;
-        });
-
-        this.panel.offButton.on('click', event => {
-            this.speechRecognition.isRun = false;
+            this.speechRecognition.isRun = !this.speechRecognition.isRun;
+            this.panel.micButton.selected = this.speechRecognition.isRun;
         });
 
         this.panel.copyButton.on('click', event => {
@@ -80,8 +72,7 @@ export class SpeakArea extends Control {
 
     refresh() {
         var text = this.textArea.node.value;
-        this.panel.micButton.visible = !this.speechRecognition.isRun;
-        this.panel.offButton.visible = this.speechRecognition.isRun && !text;
+        this.panel.micButton.visible = !text;
         this.panel.copyButton.visible = text;
     }
 }
