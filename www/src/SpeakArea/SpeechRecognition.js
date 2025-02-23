@@ -24,10 +24,19 @@ export class SpeechRecognition extends Component {
         this.recognition.continuous = true;
 
         this.recognition.onresult = event => this.updateResult(event);
-        this.recognition.onend = () => this.updateEnd();
-        this.recognition.onerror = event => console.error('Recognition error:', event.error);
+
+        this.recognition.onend = event => {
+            if (this.isRun) {
+                setTimeout(() => this.recognition.start(), 100);
+            }
+        }
+
+        this.recognition.onerror = event => { 
+            console.error('Recognition error:', event.error);
+        }
 
         this.bind('isRun', this, 'updateRun', { run: true });
+
         this.on('text', event => {
             !this.text && this.restart()
         }, { run: true });
@@ -36,6 +45,9 @@ export class SpeechRecognition extends Component {
     restart() {
         this.finalTranscript = '';
         this.text = ''; 
+
+        (this.recognition.state == 'running') && this.recognition.stop();
+        (this.recognition.state != 'running') && this.recognition.start();
     }
 
     updateRun () {
@@ -43,12 +55,6 @@ export class SpeechRecognition extends Component {
             this.recognition.start();
         } else if (!this.isRun) {
             this.recognition.stop();
-        }
-    }
-
-    updateEnd () {
-        if (this.isRun) {
-            setTimeout(() => this.recognition.start(), 100);
         }
     }
 
