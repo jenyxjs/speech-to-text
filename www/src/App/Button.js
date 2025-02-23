@@ -5,28 +5,21 @@ export class Button extends ActiveControl {
         super({
             style: [
                 'display: flex',
-                'flex-direction: column',
                 'align-items: center',
                 'justify-content: center',
-                'box-sizing: border-box',
                 'text-decoration: none',
                 'cursor: pointer',
-                'border-radius: 10rem',
+                'border: 1px solid var(--jn-border)',
                 'background: var(--jn-primary)',
                 'color: var(--jn-text)',
                 'fill: var(--jn-text)',
-
-                'padding: .5rem 1.5rem',
-                'border: 1px solid var(--jn-border)',
+                'box-sizing: border-box',
+                'border-radius: 3rem',
+                'padding: .5rem',
+                'width: 3rem',
             ],
             styleSet: {
                 hovered: [
-                    'filter: brightness(1.05)',
-                ],
-                selected: [
-                    'filter: brightness(1.05)',
-                ],
-                selected_hovered: [
                     'filter: brightness(1.05)',
                 ],
             },

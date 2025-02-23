@@ -2,6 +2,9 @@ import { Control } from '../../lib/jenyx/components/Control/Control.js';
 import { SpeechRecognition } from './SpeechRecognition.js';
 import { Textarea } from '../Input/Textarea.js';
 import { Button } from '../App/Button.js';
+import { MIC_SVG } from '../Assert/MIC_SVG.js';
+import { COPY_SVG } from '../Assert/COPY_SVG.js';
+import { OFF_SVG } from '../Assert/OFF_SVG.js';
 
 export class SpeakArea extends Control {
     constructor(options) {
@@ -27,15 +30,15 @@ export class SpeakArea extends Control {
                     children: {
                         micButton: {
                             class: Button,
-                            text: 'Mic',
+                            text: MIC_SVG,
                         },
-                        stopButton: {
+                        offButton: {
                             class: Button,
-                            text: 'Stop',
+                            text: OFF_SVG,
                         },
                         copyButton: {
                             class: Button,
-                            text: 'Copy',
+                            text: COPY_SVG,
                         },
                     },
                     style: [
@@ -62,7 +65,11 @@ export class SpeakArea extends Control {
         this.textArea.bind('text', this, 'refresh', { run: true });
 
         this.panel.micButton.on('click', event => {
-            this.speechRecognition.isRun = !this.speechRecognition.isRun;
+            this.speechRecognition.isRun = true;
+        });
+
+        this.panel.offButton.on('click', event => {
+            this.speechRecognition.isRun = false;
         });
 
         this.panel.copyButton.on('click', event => {
@@ -73,9 +80,8 @@ export class SpeakArea extends Control {
 
     refresh() {
         var text = this.textArea.node.value;
-
         this.panel.micButton.visible = !this.speechRecognition.isRun;
-        this.panel.stopButton.visible = this.speechRecognition.isRun && !text;
+        this.panel.offButton.visible = this.speechRecognition.isRun && !text;
         this.panel.copyButton.visible = text;
     }
 }

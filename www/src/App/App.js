@@ -20,7 +20,7 @@ export class App extends AbstractApp {
 				text: 'Jenyx',
 				href: 'https://github.com/jenyxjs/speech-to-text',
 				style: [
-					'padding: 1rem',
+					'margin: 1rem',
 				]
 			},
 			initCssTheme: {
