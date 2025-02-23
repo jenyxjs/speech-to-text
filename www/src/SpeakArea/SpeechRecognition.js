@@ -3,62 +3,52 @@ import { Component } from '../../lib/jenyx/components/Component/Component.js'
 export class SpeechRecognition extends Component {
     constructor(options) {
         super({
-            recognition: null,
+            recognition: {
+                class: window.SpeechRecognition || window.webkitSpeechRecognition,
+            },
             lang: navigator.language,
+            state: 'idle',
             isRun: false,
             text: '',
             finalTranscript: '',
             options
         });
 
+        this.recognition.interimResults = true;
+        this.recognition.continuous = true;
+        this.bind('lang', this.recognition);
+
         SpeechRecognition.init.call(this);
     }
 
     static async init () {
-        this.recognition = new (
-            window.SpeechRecognition || window.webkitSpeechRecognition
-        )();
+        this.recognition.onresult = event => this.update(event);
 
-        this.bind('lang', this.recognition);
-        this.recognition.interimResults = true;
-        this.recognition.continuous = true;
-
-        this.recognition.onresult = event => this.updateResult(event);
+        this.recognition.onstart = () => this.state = 'running';
+        this.recognition.onend = () => this.state = 'idle';
+        this.recognition.onerror = () => this.state = 'error';
 
         this.recognition.onend = event => {
-            if (this.isRun) {
-                setTimeout(() => this.recognition.start(), 100);
-            }
+            this.isRun && setTimeout(() => this.recognition.start(), 100);
         }
 
         this.recognition.onerror = event => { 
             console.error('Recognition error:', event.error);
         }
 
-        this.bind('isRun', this, 'updateRun', { run: true });
-
-        this.on('text', event => {
-            !this.text && this.restart()
-        }, { run: true });
+        this.on('text', () => !this.text && this.restart());
+        this.bind('isRun', this, 'restart', { run: true });
     };
 
     restart() {
+        (this.state == 'running') && this.recognition.stop();
+        (this.isRun && this.state != 'running') && this.recognition.start();
+
         this.finalTranscript = '';
         this.text = ''; 
-
-        (this.recognition.state == 'running') && this.recognition.stop();
-        (this.recognition.state != 'running') && this.recognition.start();
     }
 
-    updateRun () {
-        if (this.isRun && this.recognition && this.recognition.state !== 'running') {
-            this.recognition.start();
-        } else if (!this.isRun) {
-            this.recognition.stop();
-        }
-    }
-
-    updateResult (event) {
+    update (event) {
         var transcript = '';
 
         for (var i = event.resultIndex; i < event.results.length; i++) {
