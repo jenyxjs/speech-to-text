@@ -1,8 +1,8 @@
-import { AbstractApp } from '../../lib/jenyx/components/AbstractApp/AbstractApp.js'
-import { Pwa } from '../../lib/jenyx/components/Pwa/Pwa.js';
+import { AbstractApp } from '../AbstractApp/AbstractApp.js'
+import { Pwa } from '../Pwa/Pwa.js';
+import { SpeechRecognition } from '../SpeechRecognition/SpeechRecognition.js';
 import { InitCssTheme } from './InitCssTheme.js';
 import { Layout } from './Layout.js';
-import { SpeechRecognition } from '../SpeechRecognition/SpeechRecognition.js';
 
 export class App extends AbstractApp {
 	constructor() {

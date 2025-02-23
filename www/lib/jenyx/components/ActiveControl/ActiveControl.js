@@ -2,7 +2,7 @@ import { Control } from '../Control/Control.js';
 import { Component } from '../Component/Component.js';
 
 export class ActiveControl extends Control {
-    constructor (options) {
+    constructor(options) {
         super({
             tagName: options?.tagName || 'a',
 
@@ -43,7 +43,7 @@ export class ActiveControl extends Control {
         ActiveControl.init.call(this);
     }
 
-    static init () {
+    static init() {
         this.node.onclick = event => {
             if (!this.disabled && event.which == 1) {
                 this.emit('click', event);
@@ -144,14 +144,14 @@ export class ActiveControl extends Control {
         this.refreshStyle();
     }
 
-    refreshStyle () {
+    refreshStyle() {
         this.node.tabIndex = this.disabled ? -1 : 0;
         this.currentStyle = this.getStyle();
     }
 
-    getStyle () {
+    getStyle() {
         var set = this.styleSet;
-        
+
         if (this.selected && this.disabled) {
             return set.selected_disabled;
         } else if (this.selected && this.pressed && set.selected_pressed) {
@@ -175,7 +175,7 @@ export class ActiveControl extends Control {
         return [];
     }
 
-    set currentStyle (value) {
+    set currentStyle(value) {
         var styles = [...this.style, ...value || []];
         this.node.style.cssText = styles.join(';');
         this.refreshVisible();

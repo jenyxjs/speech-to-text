@@ -1,5 +1,5 @@
 export class Listener {
-    constructor (options) {
+    constructor(options) {
         this.id = ++Listener.id;
         options.context._.listeners[this.id] = this;
         this.type = options.type;
@@ -7,22 +7,22 @@ export class Listener {
         this.handler = options.handler;
         this.bubbling = options.bubbling;
         this.final = options.final;
-        this.finalTmeoutId = 0;
+        this.finalTimeoutId = 0;
         options.run && this.run();
         options.exist && this.exist();
     }
 
     static id = 0;
 
-    remove () {
+    remove() {
         delete this.context._.listeners[this.id];
     }
 
-    run () {
+    run() {
         this.handler.call(this.context);
     }
 
-    exist () {
+    exist() {
         if (this.context[this.type]) {
             this.handler.call(this.context);
         }

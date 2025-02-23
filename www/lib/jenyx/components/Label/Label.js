@@ -1,7 +1,7 @@
 import { Control } from '../../components/Control/Control.js';
 
 export class Label extends Control {
-    constructor (options) {
+    constructor(options) {
         super({
             text: '',
             options

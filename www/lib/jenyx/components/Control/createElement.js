@@ -1,4 +1,4 @@
-export function createElement (tagName, parentNode, attrs, css) {
+export function createElement(tagName, parentNode, attrs, css) {
 	var node = document.createElement(tagName);
 
 	if (attrs) for (var i in attrs) node[i] = attrs[i];

@@ -1,4 +1,4 @@
-import { Component } from '../Component/Component.js';
+import { Component } from '../../lib/jenyx/components/Component/Component.js';
 
 export class AbstractApp extends Component {
     constructor (options) {

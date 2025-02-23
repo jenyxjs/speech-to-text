@@ -1,5 +1,5 @@
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
-import { Textarea } from '../../lib/jenyx/components/Input/Textarea.js';
+import { Textarea } from '../Input/Textarea.js';
 import { Button } from './Button.js';
 
 export class Layout extends Control {

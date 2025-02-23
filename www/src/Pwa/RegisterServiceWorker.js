@@ -1,4 +1,4 @@
-import { Component } from '../../components/Component/Component.js';
+import { Component } from '../../lib/jenyx/components/Component/Component.js';
 
 export class RegisterServiceWorker extends Component {
     constructor (options) {

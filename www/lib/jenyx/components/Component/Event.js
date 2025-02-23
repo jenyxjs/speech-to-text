@@ -1,5 +1,5 @@
 export class Event {
-    constructor (options) {
+    constructor(options) {
         this.type = options.type;
         this.target = options.target;
         this.value = options.value;
@@ -7,7 +7,7 @@ export class Event {
         this.send();
     }
 
-    send () {
+    send() {
         var context = this.target;
 
         do {
@@ -21,8 +21,8 @@ export class Event {
                 if (!isHandler || !isType || !(isTarget || isBubbling)) continue;
 
                 if (listener.final) {
-                    clearTimeout(listener.finalTmeoutId);
-                    listener.finalTmeoutId = setTimeout(() => {
+                    clearTimeout(listener.finalTimeoutId);
+                    listener.finalTimeoutId = setTimeout(() => {
                         listener.handler.call(listener.context, this, listener);
                     });
                 } else {

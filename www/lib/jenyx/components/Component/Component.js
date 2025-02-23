@@ -10,7 +10,7 @@ import { Event } from './Event.js';
 import { Listener } from './Listener.js';
 
 export class Component {
-    constructor (options) {
+    constructor(options) {
         Object.defineProperty(this, '_', { enumerable: false, value: {} });
         this.defineProperty('name', { enumerable: false });
         this.defineProperty('host', { enumerable: false });
@@ -23,7 +23,7 @@ export class Component {
 
     static version = '0.x';
 
-    get fullname () {
+    get fullname() {
         var fullname = [];
 
         var constructor = this.constructor;
@@ -36,25 +36,25 @@ export class Component {
         return fullname.join('_');
     }
 
-    get listeners () {
+    get listeners() {
         return this._.listeners;
     }
 
-    set listeners (listeners) {
+    set listeners(listeners) {
         for (var type in listeners) {
             var handler = listeners[type];
             this.on(type, handler);
         }
     }
 
-    removeListeners (type) {
+    removeListeners(type) {
         for (var i in this._.listeners) {
             var listener = this._.listeners[i];
             (listener.type == type) && listener.remove();
         }
     }
 
-    emit (type, value) {
+    emit(type, value) {
         var event = new Event({
             targetType: type,
             type: type,
@@ -72,7 +72,7 @@ export class Component {
         });
     }
 
-    on (type, handler, options) {
+    on(type, handler, options) {
         return new Listener({
             context: this,
             type: type,
@@ -84,7 +84,7 @@ export class Component {
         });
     }
 
-    wait (type, options) {
+    wait(type, options) {
         if (this[type]) return this[type];
 
         return new Promise(resolve => {
@@ -95,7 +95,7 @@ export class Component {
         });
     }
 
-    bind (type, object, key, options) {
+    bind(type, object, key, options) {
         key ||= type;
 
         if (typeof object[key] == 'function') {
@@ -105,13 +105,13 @@ export class Component {
         }
     }
 
-    _bindFunction (type, object, key, options) {
+    _bindFunction(type, object, key, options) {
         this.on(type, event => {
             object[key].call(object, event, this[type]);
         }, options);
     }
 
-    _bindProperty (type, object, key, options) {
+    _bindProperty(type, object, key, options) {
         var runOptions = { ...options, run: true };
 
         this.on(type, event => {
@@ -123,7 +123,7 @@ export class Component {
         }, runOptions);
     }
 
-    defineProperty (name, options) {
+    defineProperty(name, options) {
         var enumerable = (options?.enumerable === false) ? false : true;
 
         Object.defineProperty(this, name, {
@@ -140,7 +140,7 @@ export class Component {
         });
     }
 
-    set options (options) {
+    set options(options) {
         for (var name in options) {
             var value = options[name];
             var newClass = value?.class;
@@ -166,11 +166,11 @@ export class Component {
         this.emit('options', options);
     }
 
-    get children () {
+    get children() {
         return this._.children;
     }
 
-    set children (children) {
+    set children(children) {
         for (var name in children) {
             var value = children[name];
 
@@ -183,7 +183,7 @@ export class Component {
         this.emit('children');
     }
 
-    getNewClass (name, value = {}) { 
+    getNewClass(name, value = {}) {
         var { class: Class, ...newOptions } = Object.assign({
             name: name,
             host: this,
@@ -192,7 +192,7 @@ export class Component {
         return new Class(newOptions);
     }
 
-    appendChild (name, child) {
+    appendChild(name, child) {
         child.parent = this;
         this._.children[name] = child;
 
@@ -208,12 +208,12 @@ export class Component {
         this.emit('child', child);
     }
 
-    removeChildren () {
+    removeChildren() {
         this._.children = {};
         this.emit('child');
     }
 
-    replaceChildren (children) {
+    replaceChildren(children) {
         this.removeChildren();
         this.children = children;
     }
