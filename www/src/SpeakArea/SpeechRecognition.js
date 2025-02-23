@@ -7,8 +7,8 @@ export class SpeechRecognition extends Component {
                 class: window.SpeechRecognition || window.webkitSpeechRecognition,
             },
             lang: navigator.language,
-            state: 'idle',
             isRun: false,
+            state: 'stop',
             text: '',
             finalTranscript: '',
             options
@@ -22,30 +22,32 @@ export class SpeechRecognition extends Component {
     }
 
     static async init () {
-        this.recognition.onresult = event => this.update(event);
+        this.recognition.addEventListener('result', event => {
+            this.update(event);
+        });
 
-        this.recognition.onstart = () => this.state = 'running';
-        this.recognition.onend = () => this.state = 'idle';
-        this.recognition.onerror = () => this.state = 'error';
+        this.recognition.addEventListener('start', event => {
+            this.state = 'start';
+        });
 
-        this.recognition.onend = event => {
+        this.recognition.addEventListener('end', event => {
+            this.state = 'stop';
             this.isRun && setTimeout(() => this.recognition.start(), 100);
-        }
-
-        this.recognition.onerror = event => { 
-            console.error('Recognition error:', event.error);
-        }
+        });
 
         this.on('text', () => !this.text && this.restart());
         this.bind('isRun', this, 'restart', { run: true });
     };
 
-    restart() {
-        (this.state == 'running') && this.recognition.stop();
-        (this.isRun && this.state != 'running') && this.recognition.start();
+    async restart() {
+        if (this.state == 'start') {
+            this.recognition.stop();
+        } else {
+            this.isRun && setTimeout(() => this.recognition.start(), 100);
+        }
 
         this.finalTranscript = '';
-        this.text = ''; 
+        this.text = '';
     }
 
     update (event) {
