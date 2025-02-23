@@ -1,12 +1,28 @@
 import { AbstractApp } from '../AbstractApp/AbstractApp.js'
 import { Pwa } from '../Pwa/Pwa.js';
-import { SpeechRecognition } from '../SpeechRecognition/SpeechRecognition.js';
 import { InitCssTheme } from './InitCssTheme.js';
-import { Layout } from './Layout.js';
+import { SpeakArea } from '../SpeakArea/SpeakArea.js';
+import { LinkButton } from '../LinkButton/LinkButton.js';
 
 export class App extends AbstractApp {
 	constructor() {
 		super({
+			speakArea: {
+				class: SpeakArea,
+				parentNode: document.body,
+				style: [
+					'padding: 1rem',
+				]
+			},
+			linkButton: {
+				class: LinkButton,
+				parentNode: document.body,
+				text: 'Jenyx',
+				href: 'https://github.com/jenyxjs/speech-to-text',
+				style: [
+					'padding: 1rem',
+				]
+			},
 			initCssTheme: {
 				class: InitCssTheme,
 			},
@@ -14,12 +30,6 @@ export class App extends AbstractApp {
 				class: Pwa,
 				serviceWorkerFileName: './serviceWorker.js',
 			},
-			speechRecognition: {
-				class: SpeechRecognition,
-			},
-			layout: {
-				class: Layout,
-			}
 		});
 	}
 }

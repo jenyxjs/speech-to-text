@@ -1,36 +1,37 @@
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
+import { SpeechRecognition } from './SpeechRecognition.js';
 import { Textarea } from '../Input/Textarea.js';
-import { Button } from './Button.js';
+import { Button } from '../App/Button.js';
 
-export class Layout extends Control {
+export class SpeakArea extends Control {
     constructor(options) {
         super({
-            parentNode: document.body,
+            empty: true,
+            speechRecognition: {
+                class: SpeechRecognition,
+            },
             children: {
                 textArea: {
                     class: Textarea,
                     placeholder: 'Speak into the microphone',
                     style: [
+                        'display: flex',
                         'border-radius: 1em',
                         'padding: 1rem',
-                        'margin: 1rem 0',
                         'background: var(--jn-primary)',
                         'border: 1px solid var(--jn-border)',
                     ]
                 },
-                bar: {
+                panel: {
                     class: Control,
                     children: {
                         micButton: {
                             class: Button,
+                            text: 'Mic',
                         },
-                        clearButton: {
+                        stopButton: {
                             class: Button,
-                            text: 'Clear',
-                        },
-                        spacerBlock: {
-                            class: Control,
-                            style: ['flex-basis: 100%',],
+                            text: 'Stop',
                         },
                         copyButton: {
                             class: Button,
@@ -38,43 +39,43 @@ export class Layout extends Control {
                         },
                     },
                     style: [
+                        'flex-direction: column',
                         'display: flex',
                         'gap: 1rem',
                     ],
-                },
+                }
             },
             style: [
                 'display: flex',
-                'flex-direction: column',
+                'gap: 1rem',
                 'font-family: monospace',
-                'padding: 1rem',
             ],
             options
         });
 
-        Layout.init.call(this);
+        SpeakArea.init.call(this);
     }
 
     static init() {
-        app.speechRecognition.bind('text', this.textArea);
-        app.speechRecognition.bind('isRun', this, 'refresh', { run: true });
+        this.speechRecognition.bind('text', this.textArea);
+        this.speechRecognition.bind('isRun', this, 'refresh');
+        this.textArea.bind('text', this, 'refresh', { run: true });
 
-        this.bar.micButton.on('click', event => {
-            app.speechRecognition.isRun = !app.speechRecognition.isRun;
+        this.panel.micButton.on('click', event => {
+            this.speechRecognition.isRun = !this.speechRecognition.isRun;
         });
 
-        this.bar.clearButton.on('click', event => {
-            app.speechRecognition.reset();
-        });
-
-        this.bar.copyButton.on('click', event => {
+        this.panel.copyButton.on('click', event => {
             navigator.clipboard.writeText(this.textArea.node.value);
-            app.speechRecognition.reset();
+            this.speechRecognition.restart();
         });
     }
 
     refresh() {
-        this.bar.micButton.selected = app.speechRecognition.isRun;
-        this.bar.micButton.text = app.speechRecognition.isRun ? 'Stop ' : 'Start';
+        var text = this.textArea.node.value;
+
+        this.panel.micButton.visible = !this.speechRecognition.isRun;
+        this.panel.stopButton.visible = this.speechRecognition.isRun && !text;
+        this.panel.copyButton.visible = text;
     }
 }

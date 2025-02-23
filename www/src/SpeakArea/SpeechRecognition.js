@@ -29,11 +29,11 @@ export class SpeechRecognition extends Component {
 
         this.bind('isRun', this, 'updateRun', { run: true });
         this.on('text', event => {
-            !this.text && this.reset()
+            !this.text && this.restart()
         }, { run: true });
     };
 
-    reset() {
+    restart() {
         this.finalTranscript = '';
         this.text = ''; 
     }
