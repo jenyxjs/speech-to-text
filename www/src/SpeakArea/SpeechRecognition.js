@@ -21,7 +21,7 @@ export class SpeechRecognition extends Component {
         SpeechRecognition.init.call(this);
     }
 
-    static async init () {
+    static async init() {
         this.recognition.addEventListener('result', event => {
             this.update(event);
         });
@@ -54,31 +54,27 @@ export class SpeechRecognition extends Component {
         }, 100);
     }
 
-    update (event) {
-        var transcript = '';
+    update(event) {
+        var sentence = '';
+        var space = this.transcripted ? ` ` : ``;
 
         for (var i = event.resultIndex; i < event.results.length; i++) {
             var result = event.results[i];
-            var sentence = result[0].transcript.trim();
+            var newText = result[0].transcript.trim();
 
-            if (!transcript) {
-                sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
+            if (!sentence) {
+                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
             }
-            
 
             if (result.isFinal) {
-                this.transcripted += sentence + '. ';
+                this.transcripted += space + newText + '.';
             } else {
-                const lastChar = this.transcripted[this.transcripted.length - 1];
-
-                if (this.transcripted && lastChar != ' ') {
-                    transcript += ' ' + sentence;
-                } else {
-                    transcript += sentence;
-                }
+                let space = this.sentence ? ` ` : ``;
+                sentence += space + newText;
+                console.log(sentence);
             }
         }
 
-        this.text = this.transcripted + transcript;
+        this.text = this.transcripted + space + sentence;
     }
 };
