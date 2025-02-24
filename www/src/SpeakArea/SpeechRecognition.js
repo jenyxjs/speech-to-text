@@ -69,9 +69,8 @@ export class SpeechRecognition extends Component {
             if (result.isFinal) {
                 this.transcripted += space + newText + '.';
             } else {
-                let space = this.sentence ? ` ` : ``;
+                let space = sentence ? ` ` : ``;
                 sentence += space + newText;
-                console.log(sentence);
             }
         }
 
