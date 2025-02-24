@@ -56,11 +56,11 @@ export class SpeakArea extends Control {
 
     static init() {
         this.speechRecognition.bind('text', this.textArea);
-        this.speechRecognition.bind('isRun', this, 'refresh');
+        this.speechRecognition.bind('isActive', this, 'refresh');
         this.textArea.bind('text', this, 'refresh', { run: true });
 
         this.panel.micButton.on('click', event => {
-            this.speechRecognition.isRun = !this.speechRecognition.isRun;
+            this.speechRecognition.isActive = !this.speechRecognition.isActive;
             this.refresh();
         });
 
@@ -74,9 +74,9 @@ export class SpeakArea extends Control {
         var text = this.textArea.node.value;
 
         this.panel.micButton.visible = !text;
-        this.panel.micButton.selected = this.speechRecognition.isRun;
+        this.panel.micButton.selected = this.speechRecognition.isActive;
 
         this.panel.copyButton.visible = text;
-        this.panel.copyButton.selected = this.speechRecognition.isRun;
+        this.panel.copyButton.selected = this.speechRecognition.isActive;
     }
 }

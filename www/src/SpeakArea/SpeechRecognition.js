@@ -7,10 +7,10 @@ export class SpeechRecognition extends Component {
                 class: window.SpeechRecognition || window.webkitSpeechRecognition,
             },
             lang: navigator.language,
-            isRun: false,
-            state: 'stop',
+            isActive: false,
+            currentState: 'stop',
+            transcripted: '',
             text: '',
-            finalTranscript: '',
             options
         });
 
@@ -27,26 +27,29 @@ export class SpeechRecognition extends Component {
         });
 
         this.recognition.addEventListener('start', event => {
-            this.state = 'start';
+            this.currentState = 'start';
         });
 
         this.recognition.addEventListener('end', event => {
-            this.state = 'stop';
-            this.isRun && setTimeout(() => this.recognition.start(), 100);
+            this.currentState = 'stop';
+
+            this.isActive && setTimeout(() => {
+                this.recognition.start();
+             }, 100);
         });
 
         this.on('text', () => !this.text && this.restart());
-        this.bind('isRun', this, 'restart', { run: true });
+        this.bind('isActive', this, 'restart', { run: true });
     };
 
     async restart() {
-        if (this.state == 'start') {
+        if (this.currentState == 'start') {
             this.recognition.stop();
         } else {
-            this.isRun && setTimeout(() => this.recognition.start(), 100);
+            this.isActive && setTimeout(() => this.recognition.start(), 100);
         }
 
-        this.finalTranscript = '';
+        this.transcripted = '';
         this.text = '';
     }
 
@@ -60,14 +63,21 @@ export class SpeechRecognition extends Component {
             if (!transcript) {
                 sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
             }
+            
 
             if (result.isFinal) {
-                this.finalTranscript += sentence + '. ';
-            } else  {
-                transcript += ' ' + sentence;
+                this.transcripted += sentence + '. ';
+            } else {
+                const lastChar = this.transcripted[this.transcripted.length - 1];
+
+                if (this.transcripted && lastChar != ' ') {
+                    transcript += ' ' + sentence;
+                } else {
+                    transcript += sentence;
+                }
             }
         }
 
-        this.text = this.finalTranscript + transcript;
+        this.text = this.transcripted + transcript;
     }
 };
