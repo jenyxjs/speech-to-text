@@ -56,7 +56,7 @@ export class SpeechRecognition extends Component {
 
     update(event) {
         var sentence = '';
-        var space = this.transcripted ? ` ` : ``;
+        var outerSpace = this.transcripted ? ` ` : ``;
 
         for (var i = event.resultIndex; i < event.results.length; i++) {
             var result = event.results[i];
@@ -67,13 +67,13 @@ export class SpeechRecognition extends Component {
             }
 
             if (result.isFinal) {
-                this.transcripted += space + newText + '.';
+                this.transcripted += outerSpace + newText + '.';
             } else {
-                let space = sentence ? ` ` : ``;
-                sentence += space + newText;
+                var innerSpace = sentence ? ` ` : ``;
+                sentence += innerSpace + newText;
             }
         }
 
-        this.text = this.transcripted + space + sentence;
+        this.text = this.transcripted + outerSpace + sentence;
     }
 };
