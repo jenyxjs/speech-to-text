@@ -32,13 +32,9 @@ export class SpeechRecognition extends Component {
 
         this.recognition.addEventListener('end', event => {
             this.currentState = 'stop';
-
-            this.isActive && setTimeout(() => {
-                this.recognition.start();
-             }, 100);
+            this.start();
         });
 
-        this.on('text', () => !this.text && this.restart());
         this.bind('isActive', this, 'restart', { run: true });
     };
 
@@ -46,11 +42,16 @@ export class SpeechRecognition extends Component {
         if (this.currentState == 'start') {
             this.recognition.stop();
         } else {
-            this.isActive && setTimeout(() => this.recognition.start(), 100);
+            this.start();
         }
+    }
 
-        this.transcripted = '';
-        this.text = '';
+    start() {
+        this.isActive && setTimeout(() => {
+            this.transcripted = '';
+            this.text = '';
+            this.recognition.start();
+        }, 100);
     }
 
     update (event) {
