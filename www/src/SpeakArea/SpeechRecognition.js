@@ -66,7 +66,7 @@ export class SpeechRecognition extends Component {
                 newText = newText.charAt(0).toUpperCase() + newText.slice(1);
             }
 
-            if (result.isFinal) {
+            if (result.isFinal && newText) {
                 this.transcripted += outerSpace + newText + '.';
             } else {
                 var innerSpace = sentence ? ` ` : ``;
