@@ -72,6 +72,19 @@ export class SpeakArea extends Control {
         });
 
         speechRecognition.bind('currentText', textArea, 'text');
+
+        textArea.on('text', () => {
+            var position = textArea.node.selectionStart;
+            speechRecognition.currentCursorPosition = position;
+        });
+
+        textArea.node.addEventListener('click', () => {
+            speechRecognition.cursorPosition = textArea.node.selectionStart;
+        });
+
+        textArea.node.addEventListener('keyup', () => {
+            speechRecognition.cursorPosition = textArea.node.selectionStart;
+        });
     }
 
     refresh() {

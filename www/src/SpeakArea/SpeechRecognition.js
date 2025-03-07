@@ -11,9 +11,11 @@ export class SpeechRecognition extends Component {
             },
 
             isActive: false,
+            isFinal: false,
             currentState: 'stop',
 
-            carriagePosition: 0,
+            currentCursorPosition: 0,
+            cursorPosition: 0,
             finalText: '',
             sentence: '',
 
@@ -41,6 +43,13 @@ export class SpeechRecognition extends Component {
             this.restart();
         });
 
+        this.on('currentText', event => {
+            if (this.isFinal) {
+                this.finalText = this.currentText;
+                console.log(this.finalText);
+            }
+        });
+
         this.bind('isActive', this, 'restart', { run: true });
     };
 
@@ -58,7 +67,7 @@ export class SpeechRecognition extends Component {
         this.isActive && setTimeout(() => {
             this.finalText = '';
             this.currentText = '';
-            this.carriagePosition = 0;
+            this.cursorPosition = 0;
             this.restart();
         }, 100);
     }
@@ -70,39 +79,43 @@ export class SpeechRecognition extends Component {
             var result = event.results[i];
             var phrase = result[0].transcript.trim();
 
-            this.updateText(phrase);
-            this.currentText = this.finalText + this.sentence;
+            this.isFinal = result.isFinal;
+            this.updateSentence(phrase, result.isFinal);
 
-            if (result.isFinal) {
-                var nextChar = this.finalText[this.carriagePosition];
+            var part1 = this.finalText.slice(0, this.cursorPosition);
+            var part2 = this.finalText.slice(this.cursorPosition);
+            this.currentText = part1 + this.sentence + part2;
 
-                if (nextChar === undefined || nextChar !== ' ') {
-                    this.currentText += '.';
-                }
-
+            if (this.isFinal) {
                 this.finalText = this.currentText;
-                this.carriagePosition = this.finalText.length;
-                console.log('finalText', this.carriagePosition, this.finalText);
+                this.cursorPosition = this.currentCursorPosition;
             }
         }
     }
 
-    updateText(phrase) {
-        var prevChar = this.finalText[this.carriagePosition - 2];
-        var lastChar = this.finalText[this.carriagePosition - 1];
+    updateSentence(phrase) {
+        var prevChar = this.finalText[this.cursorPosition - 2];
+        var lastChar = this.finalText[this.cursorPosition - 1];
+        var nextChar = this.finalText[this.cursorPosition];
 
         var isFirst =
             (lastChar == '.') ||
             lastChar === undefined ||
             (prevChar == '.' && lastChar == ' ');
 
-        var text = this.sentence + (this.sentence ? ` ` : ``) + phrase;
+        var text = this.sentence + (lastChar == ' ' ? `` : ` `) + phrase;
         text = text.toLowerCase().trim();
 
         if (isFirst) {
             var firctChar = text.charAt(0).toUpperCase();
             text = firctChar + text.slice(1).toLowerCase();
             this.sentence = (lastChar ? ' ' : '') + text;
+        }
+
+        if (this.isFinal && (nextChar === undefined || nextChar !== ' ')) {
+            this.sentence += '.';
+        } else if (this.isFinal) {
+            this.sentence += '. ';
         }
     }
 };
