@@ -296,68 +296,6 @@ class AbstractApp extends Component {
     }
 }
 
-class RegisterServiceWorker extends Component {
-    constructor (options) {
-        super({
-            serviceWorkerFileName: '',
-            serviceWorker: null,
-            options
-        });
-
-        RegisterServiceWorker.init.call(this);
-    }
-
-    static async init () {
-        this.register();
-    };
-
-    async register () {
-        await this.wait('serviceWorkerFileName');
-        var url = this.serviceWorkerFileName;
-        var registration = await navigator.serviceWorker.register(url, { scope: './' });
-
-        var serviceWorker = registration.installing
-            || registration.waiting
-            || registration.active;
-
-        this.serviceWorker = serviceWorker;
-    };
-}
-
-class Pwa extends Component {
-    constructor (options) {
-        super({
-            deferedPrompt: null,
-            serviceWorkerFileName: '',
-            registerServiceWorker: {
-                class: RegisterServiceWorker
-            },
-            options
-        });
-
-        Pwa.init.call(this);
-    }
-
-    static async init () {
-        window.addEventListener('beforeinstallprompt', event => {
-            this.deferedPrompt = event;
-            event.preventDefault();
-        });
-
-        this.bind('serviceWorkerFileName', this.registerServiceWorker);
-    };
-
-    install () {
-        this.deferedPrompt.prompt();
-
-        this.deferedPrompt.userChoice.then(choiceResult => {
-            if (choiceResult.outcome === 'accepted') {
-                this.deferedPrompt = null;
-            }
-        });
-    }
-}
-
 function createElement(tagName, parentNode, attrs, css) {
 	var node = document.createElement(tagName);
 
@@ -575,174 +513,6 @@ function indexToStyle(index) {
 	return style;
 }
 
-class SpeechRecognition extends Component {
-    constructor(options) {
-        super({
-            recognition: null,
-            lang: navigator.language,
-            isRun: false,
-            text: '',
-            finalTranscript: '',
-            options
-        });
-
-        SpeechRecognition.init.call(this);
-    }
-
-    static async init () {
-        this.recognition = new (
-            window.SpeechRecognition || window.webkitSpeechRecognition
-        )();
-
-        this.bind('lang', this.recognition);
-        this.recognition.interimResults = true;
-        this.recognition.continuous = true;
-
-        this.recognition.onresult = event => this.updateResult(event);
-        this.recognition.onend = () => this.updateEnd();
-        this.recognition.onerror = event => console.error('Recognition error:', event.error);
-
-        this.bind('isRun', this, 'updateRun', { run: true });
-        this.on('text', event => {
-            !this.text && this.restart();
-        }, { run: true });
-    };
-
-    restart() {
-        this.finalTranscript = '';
-        this.text = ''; 
-    }
-
-    updateRun () {
-        if (this.isRun && this.recognition && this.recognition.state !== 'running') {
-            this.recognition.start();
-        } else if (!this.isRun) {
-            this.recognition.stop();
-        }
-    }
-
-    updateEnd () {
-        if (this.isRun) {
-            setTimeout(() => this.recognition.start(), 100);
-        }
-    }
-
-    updateResult (event) {
-        var transcript = '';
-
-        for (var i = event.resultIndex; i < event.results.length; i++) {
-            var result = event.results[i];
-            var sentence = result[0].transcript.trim();
-
-            if (!transcript) {
-                sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
-            }
-
-            if (result.isFinal) {
-                this.finalTranscript += sentence + '. ';
-            } else  {
-                transcript += ' ' + sentence;
-            }
-        }
-
-        this.text = this.finalTranscript + transcript;
-    }
-}
-
-class AbstractInput extends Control {
-    constructor (options) {
-        super({
-            tagName: options?.tagName || 'input',
-            text: '',
-            placeholder: '',
-            keyupChange: false,
-            style: [
-                'width: 100%',
-                'font-size: 16px',
-                'box-sizing: border-box',
-                'font-family: inherit',
-                'background: inherit',
-                'color: inherit',
-                'outline: none',
-                'border: 0',
-            ],
-            options
-        });
-
-        AbstractInput.init.call(this);
-    }
-
-    static async init () {
-        this.bind('text', this.node, 'value');
-        this.bind('placeholder', this.node, 'placeholder');
-
-        this.node.tabIndex = 0;
-
-        this.node.addEventListener('change', event => {
-            this.text = this.node.value;
-        });
-
-        this.node.addEventListener('input', event => {
-            this.text = this.node.value;
-            this.emit('input', this.node.value);
-        });
-
-        this.node.addEventListener('keyup', event => {
-            if (this.keyupChange) {
-                this.text = this.node.value;
-            }
-
-            if (event.keyCode == 13) {
-                this.emit('enter');
-                this.node.click();
-            } else if (event.keyCode == 9 && this.node == document.activeElement) {
-                this.node.style.outline = 'auto';
-            }
-        });
-
-        this.node.addEventListener('blur', event => {
-            this.node.style.outline = 'none';
-            this.emit('blur');
-        });
-
-        this.node.addEventListener('focus', event => {
-            this.emit('focus');
-        });
-    }
-
-    focus () {
-        setTimeout(this.node.focus.bind(this.node));
-    };
-}
-
-class Textarea extends AbstractInput {
-    constructor(options) {
-        super({
-            tagName: 'textarea',
-            style: [
-                'resize: none',
-                'overflow-y: hidden',
-            ],
-            options
-        });
-
-        Textarea.init.call(this);
-    }
-
-    static async init() {
-        ['focus', 'input', 'cut', 'paste'].forEach(value => {
-            this.node.addEventListener(value, this.auroresize.bind(this));
-        });
-
-        this.on('text', this.auroresize.bind(this));
-    }
-
-    auroresize() {
-        this.node.style.height = 'auto';
-        this.node.style.height = this.node.scrollHeight + 'px';
-    }
-}
-
 class ActiveControl extends Control {
     constructor(options) {
         super({
@@ -924,40 +694,155 @@ class ActiveControl extends Control {
     }
 }
 
-class Button extends ActiveControl {
-    constructor(options) {
+class LinkButton extends ActiveControl {
+    constructor (options) {
         super({
             style: [
-                'display: flex',
-                'flex-direction: column',
-                'align-items: center',
-                'justify-content: center',
-                'box-sizing: border-box',
-                'text-decoration: none',
                 'cursor: pointer',
-                'border-radius: 10rem',
-                'background: var(--jn-primary)',
-                'color: var(--jn-text)',
-                'fill: var(--jn-text)',
-
-                'padding: .5rem 1.5rem',
-                'border: 1px solid var(--jn-border)',
+                'color: var(--jn-link)',
+                'filter: none',
             ],
             styleSet: {
                 hovered: [
-                    'filter: brightness(1.05)',
-                ],
-                selected: [
-                    'filter: brightness(1.05)',
-                ],
-                selected_hovered: [
-                    'filter: brightness(1.05)',
+                    'filter: brightness(0.8)',
                 ],
             },
             options
         });
     }
 }
+
+class AbstractInput extends Control {
+    constructor (options) {
+        super({
+            tagName: options?.tagName || 'input',
+            text: '',
+            placeholder: '',
+            keyupChange: false,
+            style: [
+                'width: 100%',
+                'font-size: 16px',
+                'box-sizing: border-box',
+                'font-family: inherit',
+                'background: inherit',
+                'color: inherit',
+                'outline: none',
+                'border: 0',
+            ],
+            options
+        });
+
+        AbstractInput.init.call(this);
+    }
+
+    static async init () {
+        this.bind('text', this.node, 'value');
+        this.bind('placeholder', this.node, 'placeholder');
+
+        this.node.tabIndex = 0;
+
+        this.node.addEventListener('change', event => {
+            this.text = this.node.value;
+        });
+
+        this.node.addEventListener('input', event => {
+            this.text = this.node.value;
+            this.emit('input', this.node.value);
+        });
+
+        this.node.addEventListener('keyup', event => {
+            if (this.keyupChange) {
+                this.text = this.node.value;
+            }
+
+            if (event.keyCode == 13) {
+                this.emit('enter');
+                this.node.click();
+            } else if (event.keyCode == 9 && this.node == document.activeElement) {
+                this.node.style.outline = 'auto';
+            }
+        });
+
+        this.node.addEventListener('blur', event => {
+            this.node.style.outline = 'none';
+            this.emit('blur');
+        });
+
+        this.node.addEventListener('focus', event => {
+            this.emit('focus');
+        });
+    }
+
+    focus () {
+        setTimeout(this.node.focus.bind(this.node));
+    };
+}
+
+class Textarea extends AbstractInput {
+    constructor(options) {
+        super({
+            tagName: 'textarea',
+            style: [
+                'resize: none',
+                'overflow-y: hidden',
+            ],
+            options
+        });
+
+        Textarea.init.call(this);
+    }
+
+    static async init() {
+        ['focus', 'input', 'cut', 'paste'].forEach(value => {
+            this.node.addEventListener(value, this.auroresize.bind(this));
+        });
+
+        this.on('text', this.auroresize.bind(this));
+    }
+
+    auroresize() {
+        this.node.style.height = 'auto';
+        this.node.style.height = this.node.scrollHeight + 'px';
+    }
+}
+
+class Button extends ActiveControl {
+    constructor(options) {
+        super({
+            style: [
+                'display: flex',
+                'align-items: center',
+                'justify-content: center',
+                'text-decoration: none',
+                'cursor: pointer',
+                'border: 1px solid var(--jn-border)',
+                'background: var(--jn-primary)',
+                'color: var(--jn-text)',
+                'fill: var(--jn-text)',
+                'box-sizing: border-box',
+                'border-radius: 2.5rem',
+                'padding: .7rem',
+                'width: 3rem',
+                'filter: none',
+            ],
+            styleSet: {
+                hovered: [
+                    'filter: brightness(1.05)',
+                ],
+                selected: [
+                    'filter: drop-shadow(0px 0px 2px black)',
+                ],
+            },
+            options
+        });
+    }
+}
+
+var MIC_SVG = `<svg style="width: 100%; height: 100%; transform: scale(1.0); stroke-width: 0px; stroke: var(--jn-text);" viewBox="0 -960 960 960">
+<path d="M480-400q-50 0-85-35t-35-85v-240q0-50 35-85t85-35q50 0 85 35t35 85v240q0 50-35 85t-85 35Zm0-240Zm-40 520v-123q-104-14-172-93t-68-184h80q0 83 58.5 141.5T480-320q83 0 141.5-58.5T680-520h80q0 105-68 184t-172 93v123h-80Zm40-360q17 0 28.5-11.5T520-520v-240q0-17-11.5-28.5T480-800q-17 0-28.5 11.5T440-760v240q0 17 11.5 28.5T480-480Z" /></svg>`;
+
+var COPY_SVG = `<svg style="width: 100%; height: 100%; transform: scale(1.0); stroke-width: 0px; stroke: var(--jn-text);" viewBox="0 -960 960 960">
+<path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`;
 
 class SpeakArea extends Control {
     constructor(options) {
@@ -983,15 +868,11 @@ class SpeakArea extends Control {
                     children: {
                         micButton: {
                             class: Button,
-                            text: 'Mic',
-                        },
-                        stopButton: {
-                            class: Button,
-                            text: 'Stop',
+                            text: MIC_SVG,
                         },
                         copyButton: {
                             class: Button,
-                            text: 'Copy',
+                            text: COPY_SVG,
                         },
                     },
                     style: [
@@ -1013,72 +894,141 @@ class SpeakArea extends Control {
     }
 
     static init() {
-        this.speechRecognition.bind('text', this.textArea);
-        this.speechRecognition.bind('isRun', this, 'refresh');
-        this.textArea.bind('text', this, 'refresh', { run: true });
+        var { speechRecognition, textArea } = this;
+        var { micButton, copyButton } = this.panel;
 
-        this.panel.micButton.on('click', event => {
-            this.speechRecognition.isRun = !this.speechRecognition.isRun;
+        textArea.bind('text', this, 'refresh');
+        speechRecognition.bind('isActive', this, 'refresh', { run: true });
+
+        micButton.on('click', event => {
+            speechRecognition.isActive = !speechRecognition.isActive;
+            this.refresh();
         });
 
-        this.panel.copyButton.on('click', event => {
-            navigator.clipboard.writeText(this.textArea.node.value);
-            this.speechRecognition.restart();
+        copyButton.on('click', event => {
+            navigator.clipboard.writeText(textArea.node.value);
+            speechRecognition.restart();
         });
+
+        speechRecognition.bind('currentText', textArea, 'text');
     }
 
     refresh() {
+        var { micButton, copyButton } = this.panel;
         var text = this.textArea.node.value;
 
-        this.panel.micButton.visible = !this.speechRecognition.isRun;
-        this.panel.stopButton.visible = this.speechRecognition.isRun && !text;
-        this.panel.copyButton.visible = text;
+        micButton.visible = !text;
+        micButton.selected = this.speechRecognition.isActive;
+
+        copyButton.visible = text;
+        copyButton.selected = this.speechRecognition.isActive;
     }
 }
 
-class LinkButton extends ActiveControl {
-    constructor (options) {
+class SpeechRecognition extends Component {
+    constructor(options) {
         super({
-            style: [
-                'cursor: pointer',
-                'color: var(--jn-link)',
-                'filter: none',
-            ],
-            styleSet: {
-                hovered: [
-                    'filter: brightness(0.8)',
-                ],
+            recognition: {
+                class: window.SpeechRecognition || window.webkitSpeechRecognition,
             },
+            lang: navigator.language,
+            isActive: false,
+            currentState: 'stop',
+            carriagePosition: 0,
+            currentText: '',
+            transcripted: '',
             options
         });
+
+        this.recognition.interimResults = true;
+        this.recognition.continuous = true;
+        this.bind('lang', this.recognition);
+
+        SpeechRecognition.init.call(this);
+    }
+
+    static async init() {
+        this.recognition.addEventListener('result', event => {
+            this.update(event);
+        });
+
+        this.recognition.addEventListener('start', event => {
+            this.currentState = 'start';
+        });
+
+        this.recognition.addEventListener('end', event => {
+            this.currentState = 'stop';
+            this.start();
+        });
+
+        this.bind('isActive', this, 'restart', { run: true });
+    };
+
+    async restart() {
+        if (this.currentState == 'start') {
+            this.recognition.stop();
+        } else {
+            this.start();
+        }
+    }
+
+    start() {
+        this.isActive && setTimeout(() => {
+            this.transcripted = '';
+            this.currentText = '';
+            this.carriagePosition = 0;
+            this.recognition.start();
+        }, 100);
+    }
+
+    update(event) {
+        var sentence = '';
+
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            var result = event.results[i];
+            var newText = result[0].transcript.trim();
+
+            if (!sentence) {
+                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
+            }
+
+            if (result.isFinal && newText) {
+                var space = this.transcripted ? ` ` : ``;
+                this.transcripted += space + newText + '.';
+
+                this.currentText = this.transcripted;
+                this.emit('finalText', newText);
+            } else {
+                sentence += (sentence ? ` ` : ``) + newText;
+                this.insertTextToCarriagePosition(sentence);
+                this.emit('tmpText', sentence);
+            }
+        }
+    }
+
+    insertTextToCarriagePosition(sentence) {
+        var outerSpace = this.transcripted ? ` ` : ``;
+        this.currentText = this.transcripted + outerSpace + sentence;
     }
 }
 
 class App extends AbstractApp {
 	constructor() {
 		super({
+			initCssTheme: {
+				class: InitCssTheme,
+			},
 			speakArea: {
 				class: SpeakArea,
 				parentNode: document.body,
-				style: [
-					'padding: 1rem',
-				]
+				style: ['padding: 1rem']
 			},
 			linkButton: {
 				class: LinkButton,
 				parentNode: document.body,
+				style: ['padding: 1rem'],
 				text: 'Jenyx',
 				href: 'https://github.com/jenyxjs/speech-to-text',
-				style: [
-					'padding: 1rem',
-				]
-			},
-			initCssTheme: {
-				class: InitCssTheme,
-			},
-			pwa: {
-				class: Pwa,
-				serviceWorkerFileName: './serviceWorker.js',
 			},
 		});
 	}

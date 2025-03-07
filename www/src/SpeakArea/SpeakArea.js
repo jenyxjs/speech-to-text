@@ -1,9 +1,9 @@
-import { Component } from '../../lib/jenyx/components/Component/Component.js'
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
 import { Textarea } from '../Input/Textarea.js';
 import { Button } from '../App/Button.js';
 import { MIC_SVG } from '../Assets/MIC_SVG.js';
 import { COPY_SVG } from '../Assets/COPY_SVG.js';
+import { SpeechRecognition } from './SpeechRecognition.js';
 
 export class SpeakArea extends Control {
     constructor(options) {
@@ -68,7 +68,7 @@ export class SpeakArea extends Control {
 
         copyButton.on('click', event => {
             navigator.clipboard.writeText(textArea.node.value);
-            speechRecognition.restart();
+            speechRecognition.reset();
         });
 
         speechRecognition.bind('currentText', textArea, 'text');
@@ -85,90 +85,3 @@ export class SpeakArea extends Control {
         copyButton.selected = this.speechRecognition.isActive;
     }
 }
-
-class SpeechRecognition extends Component {
-    constructor(options) {
-        super({
-            recognition: {
-                class: window.SpeechRecognition || window.webkitSpeechRecognition,
-            },
-            lang: navigator.language,
-            isActive: false,
-            currentState: 'stop',
-            carriagePosition: 0,
-            currentText: '',
-            transcripted: '',
-            options
-        });
-
-        this.recognition.interimResults = true;
-        this.recognition.continuous = true;
-        this.bind('lang', this.recognition);
-
-        SpeechRecognition.init.call(this);
-    }
-
-    static async init() {
-        this.recognition.addEventListener('result', event => {
-            this.update(event);
-        });
-
-        this.recognition.addEventListener('start', event => {
-            this.currentState = 'start';
-        });
-
-        this.recognition.addEventListener('end', event => {
-            this.currentState = 'stop';
-            this.start();
-        });
-
-        this.bind('isActive', this, 'restart', { run: true });
-    };
-
-    async restart() {
-        if (this.currentState == 'start') {
-            this.recognition.stop();
-        } else {
-            this.start();
-        }
-    }
-
-    start() {
-        this.isActive && setTimeout(() => {
-            this.transcripted = '';
-            this.currentText = '';
-            this.carriagePosition = 0;
-            this.recognition.start();
-        }, 100);
-    }
-
-    update(event) {
-        var sentence = '';
-        
-        for (var i = event.resultIndex; i < event.results.length; i++) {
-            var result = event.results[i];
-            var newText = result[0].transcript.trim();
-            
-            if (!sentence) {
-                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
-            }
-            
-            if (result.isFinal && newText) {
-                var space = this.transcripted ? ` ` : ``;
-                this.transcripted += space + newText + '.';
-
-                this.currentText = this.transcripted;
-                this.emit('finalText', newText);
-            } else {
-                sentence += (sentence ? ` ` : ``) + newText;
-                this.insertTextToCarriagePosition(sentence);
-                this.emit('tmpText', sentence);
-            }
-        }
-    }
-
-    insertTextToCarriagePosition(sentence) {
-        var outerSpace = this.transcripted ? ` ` : ``;
-        this.currentText = this.transcripted + outerSpace + sentence;
-    }
-};
