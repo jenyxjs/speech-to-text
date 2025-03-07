@@ -11,12 +11,3 @@ The screenshot below demonstrates the main interface of the Speech to Text appli
 ![Screenshot](docs/screenshot.png)
 
 To see the application in action, visit the [live demo](https://jenyxjs.github.io/speech-to-text/www/app.html).
-
-
-## Library Repository
-
-For more information about the project, documentation, and contribution guidelines, please visit the [Jenyx library repository](https://github.com/jenyxjs/jenyx).
-
-## License
-
-This project is licensed under the MIT License.

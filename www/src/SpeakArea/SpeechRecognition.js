@@ -1,24 +1,25 @@
-import { Component } from '../../lib/jenyx/components/Component/Component.js'
+import { AbstractInput } from '../Input/AbstractInput.js';
 
-export class SpeechRecognition extends Component {
+export class SpeechRecognition extends AbstractInput {
     constructor(options) {
         super({
-            currentText: '',
+            inputNode: null,
             lang: navigator.language,
 
-            recognition: {
-                class: window.SpeechRecognition || window.webkitSpeechRecognition,
-            },
+            inputCursorPosition: 0,
+            cursorPosition: 0,
+
+            sentence: '',
+            finalText: '',
+            currentText: '',
 
             isActive: false,
-            isFinal: false,
             currentState: 'stop',
 
-            currentCursorPosition: 0,
-            cursorPosition: 0,
-            finalText: '',
-            sentence: '',
-
+            recognition: {
+                class: window.SpeechRecognition
+                    || window.webkitSpeechRecognition,
+            },
             options
         });
 
@@ -30,6 +31,27 @@ export class SpeechRecognition extends Component {
     }
 
     static async init() {
+        this.recognitionInit();
+        this.inputInit();
+    };
+
+    async inputInit() {
+        await this.wait('inputNode');
+
+        this.inputNode.addEventListener('selectionchange', () => {
+            this.inputCursorPosition = this.inputNode.selectionStart;
+        });
+
+        this.inputNode.addEventListener('click', () => {
+            this.cursorPosition = this.inputNode.selectionStart;
+        });
+
+        this.inputNode.addEventListener('keyup', () => {
+            this.cursorPosition = this.inputNode.selectionStart;
+        });
+    }
+
+    recognitionInit() {
         this.recognition.addEventListener('result', event => {
             this.update(event);
         });
@@ -43,15 +65,8 @@ export class SpeechRecognition extends Component {
             this.restart();
         });
 
-        this.on('currentText', event => {
-            if (this.isFinal) {
-                this.finalText = this.currentText;
-                console.log(this.finalText);
-            }
-        });
-
         this.bind('isActive', this, 'restart', { run: true });
-    };
+    }
 
     async restart() {
         if (this.currentState == 'start') {
@@ -64,12 +79,10 @@ export class SpeechRecognition extends Component {
     }
 
     reset() {
-        this.isActive && setTimeout(() => {
-            this.finalText = '';
-            this.currentText = '';
-            this.cursorPosition = 0;
-            this.restart();
-        }, 100);
+        this.finalText = '';
+        this.inputNode.value = '';
+        this.cursorPosition = 0;
+        this.restart();
     }
 
     update(event) {
@@ -79,44 +92,41 @@ export class SpeechRecognition extends Component {
             var result = event.results[i];
             var phrase = result[0].transcript.trim();
 
-            this.isFinal = result.isFinal;
-            this.updateSentence(phrase, result.isFinal);
+            this.updateSentence(phrase);
 
             var part1 = this.finalText.slice(0, this.cursorPosition);
             var part2 = this.finalText.slice(this.cursorPosition);
-            this.currentText = part1 + this.sentence + part2;
+            var point = this.isUpper ? '. ' : ' ';
 
-            if (this.isFinal) {
-                this.finalText = this.currentText;
-                this.cursorPosition = this.currentCursorPosition;
+            this.inputNode.value = this.autoFormat(
+                part1 + this.sentence + point + part2
+            );
+
+            if (result.isFinal) {
+                this.finalText = this.inputNode.value;
+                this.cursorPosition = this.inputCursorPosition;
             }
         }
     }
 
     updateSentence(phrase) {
-        var prevChar = this.finalText[this.cursorPosition - 2];
-        var lastChar = this.finalText[this.cursorPosition - 1];
-        var nextChar = this.finalText[this.cursorPosition];
+        var text = (this.sentence + ` ` + phrase).toLowerCase().trim();
 
-        var isFirst =
-            (lastChar == '.') ||
-            lastChar === undefined ||
-            (prevChar == '.' && lastChar == ' ');
-
-        var text = this.sentence + (lastChar == ' ' ? `` : ` `) + phrase;
-        text = text.toLowerCase().trim();
-
-        if (isFirst) {
-            var firctChar = text.charAt(0).toUpperCase();
-            text = firctChar + text.slice(1).toLowerCase();
-            this.sentence = (lastChar ? ' ' : '') + text;
+        if (this.isUpper) {
+            var firstChar = text.charAt(0).toUpperCase();
+            text = firstChar + text.slice(1).toLowerCase();
         }
 
-        if (this.isFinal && (nextChar === undefined || nextChar !== ' ')) {
-            this.sentence += '.';
-        } else if (this.isFinal) {
-            this.sentence += '. ';
-        }
+        this.sentence = ' ' + text;
     }
-};
 
+    autoFormat(str) {
+        return str.replace(/\s{2,}/g, ' ').trim();
+    }
+
+    get isUpper() {
+        var part = this.finalText.slice(0, this.cursorPosition).trim();
+        var lastChar = part[part.length - 1];
+        return !lastChar || lastChar == '.';
+    }
+}

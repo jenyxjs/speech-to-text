@@ -8,10 +8,6 @@ import { SpeechRecognition } from './SpeechRecognition.js';
 export class SpeakArea extends Control {
     constructor(options) {
         super({
-            empty: true,
-            speechRecognition: {
-                class: SpeechRecognition,
-            },
             children: {
                 textArea: {
                     class: Textarea,
@@ -51,6 +47,13 @@ export class SpeakArea extends Control {
             options
         });
 
+        this.options = {
+            speechRecognition: {
+                class: SpeechRecognition,
+                inputNode: this.textArea.node,
+            }
+        };
+
         SpeakArea.init.call(this);
     }
 
@@ -58,7 +61,6 @@ export class SpeakArea extends Control {
         var { speechRecognition, textArea } = this;
         var { micButton, copyButton } = this.panel;
 
-        textArea.bind('text', this, 'refresh');
         speechRecognition.bind('isActive', this, 'refresh', { run: true });
 
         micButton.on('click', event => {
@@ -70,31 +72,16 @@ export class SpeakArea extends Control {
             navigator.clipboard.writeText(textArea.node.value);
             speechRecognition.reset();
         });
-
-        speechRecognition.bind('currentText', textArea, 'text');
-
-        textArea.on('text', () => {
-            var position = textArea.node.selectionStart;
-            speechRecognition.currentCursorPosition = position;
-        });
-
-        textArea.node.addEventListener('click', () => {
-            speechRecognition.cursorPosition = textArea.node.selectionStart;
-        });
-
-        textArea.node.addEventListener('keyup', () => {
-            speechRecognition.cursorPosition = textArea.node.selectionStart;
-        });
     }
 
     refresh() {
         var { micButton, copyButton } = this.panel;
         var text = this.textArea.node.value;
 
-        micButton.visible = !text;
         micButton.selected = this.speechRecognition.isActive;
-
-        copyButton.visible = text;
         copyButton.selected = this.speechRecognition.isActive;
+
+        micButton.visible = !text;
+        copyButton.visible = text;
     }
 }

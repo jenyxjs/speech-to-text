@@ -15,7 +15,7 @@ export class Textarea extends AbstractInput {
     }
 
     static async init() {
-        ['focus', 'input', 'cut', 'paste'].forEach(value => {
+        ['focus', 'input', 'cut', 'paste', 'selectionchange'].forEach(value => {
             this.node.addEventListener(value, this.auroresize.bind(this));
         });
 
