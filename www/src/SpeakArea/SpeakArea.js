@@ -1,5 +1,5 @@
+import { Component } from '../../lib/jenyx/components/Component/Component.js'
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
-import { SpeechRecognition } from './SpeechRecognition.js';
 import { Textarea } from '../Input/Textarea.js';
 import { Button } from '../App/Button.js';
 import { MIC_SVG } from '../Assets/MIC_SVG.js';
@@ -55,28 +55,120 @@ export class SpeakArea extends Control {
     }
 
     static init() {
-        this.speechRecognition.bind('text', this.textArea);
-        this.speechRecognition.bind('isActive', this, 'refresh');
-        this.textArea.bind('text', this, 'refresh', { run: true });
+        var { speechRecognition, textArea } = this;
+        var { micButton, copyButton } = this.panel;
 
-        this.panel.micButton.on('click', event => {
-            this.speechRecognition.isActive = !this.speechRecognition.isActive;
+        textArea.bind('text', this, 'refresh');
+        speechRecognition.bind('isActive', this, 'refresh', { run: true });
+
+        micButton.on('click', event => {
+            speechRecognition.isActive = !speechRecognition.isActive;
             this.refresh();
         });
 
-        this.panel.copyButton.on('click', event => {
-            navigator.clipboard.writeText(this.textArea.node.value);
-            this.speechRecognition.restart();
+        copyButton.on('click', event => {
+            navigator.clipboard.writeText(textArea.node.value);
+            speechRecognition.restart();
         });
+
+        speechRecognition.bind('currentText', textArea, 'text');
     }
 
     refresh() {
+        var { micButton, copyButton } = this.panel;
         var text = this.textArea.node.value;
 
-        this.panel.micButton.visible = !text;
-        this.panel.micButton.selected = this.speechRecognition.isActive;
+        micButton.visible = !text;
+        micButton.selected = this.speechRecognition.isActive;
 
-        this.panel.copyButton.visible = text;
-        this.panel.copyButton.selected = this.speechRecognition.isActive;
+        copyButton.visible = text;
+        copyButton.selected = this.speechRecognition.isActive;
     }
 }
+
+class SpeechRecognition extends Component {
+    constructor(options) {
+        super({
+            recognition: {
+                class: window.SpeechRecognition || window.webkitSpeechRecognition,
+            },
+            lang: navigator.language,
+            isActive: false,
+            currentState: 'stop',
+            carriagePosition: 0,
+            currentText: '',
+            transcripted: '',
+            options
+        });
+
+        this.recognition.interimResults = true;
+        this.recognition.continuous = true;
+        this.bind('lang', this.recognition);
+
+        SpeechRecognition.init.call(this);
+    }
+
+    static async init() {
+        this.recognition.addEventListener('result', event => {
+            this.update(event);
+        });
+
+        this.recognition.addEventListener('start', event => {
+            this.currentState = 'start';
+        });
+
+        this.recognition.addEventListener('end', event => {
+            this.currentState = 'stop';
+            this.start();
+        });
+
+        this.bind('isActive', this, 'restart', { run: true });
+    };
+
+    async restart() {
+        if (this.currentState == 'start') {
+            this.recognition.stop();
+        } else {
+            this.start();
+        }
+    }
+
+    start() {
+        this.isActive && setTimeout(() => {
+            this.transcripted = '';
+            this.currentText = '';
+            this.carriagePosition = 0;
+            this.recognition.start();
+        }, 100);
+    }
+
+    update(event) {
+        var sentence = '';
+        
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            var result = event.results[i];
+            var newText = result[0].transcript.trim();
+            
+            if (!sentence) {
+                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
+            }
+            
+            if (result.isFinal && newText) {
+                var space = this.transcripted ? ` ` : ``;
+                this.transcripted += space + newText + '.';
+
+                this.currentText = this.transcripted;
+                this.emit('finalText', newText);
+            } else {
+                sentence += (sentence ? ` ` : ``) + newText;
+                this.insertTextToCarriagePosition(sentence);
+                this.emit('tmpText', sentence);
+            }
+        }
+    }
+
+    insertTextToCarriagePosition(sentence) {
+        var outerSpace = this.transcripted ? ` ` : ``;
+        this.currentText = this.transcripted + outerSpace + sentence;
+    }
+};
