@@ -97,18 +97,13 @@ export class SpeechRecognition extends Component {
             (prevChar == '.' && lastChar == ' ');
 
         var text = this.sentence + (this.sentence ? ` ` : ``) + phrase;
-        var sentence = text.toLowerCase().trim();
+        text = text.toLowerCase().trim();
 
         if (isFirst) {
-            sentence = this.firstLetterToUpper(sentence);
-            var space = lastChar ? ' ' : '';
-            this.sentence = space + sentence;
+            var firctChar = text.charAt(0).toUpperCase();
+            text = firctChar + text.slice(1).toLowerCase();
+            this.sentence = (lastChar ? ' ' : '') + text;
         }
-    }
-
-    firstLetterToUpper(text) {
-        var firctChar = text.charAt(0).toUpperCase();
-        return firctChar + text.slice(1).toLowerCase();
     }
 };
 
