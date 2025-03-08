@@ -2,17 +2,16 @@
 
 // Use Conventional Commits for future commits
 
-## app.html
-
-
 ## demo.html
 - feat: add GoogleAnalytics
+- feat: add Input 
+- feat: add textarea 
+- feat: add contentEditable
+
+## Компонент
 - Перевод Гугл
 - Пунктуация ИИ
 - Ответ ИИ
-- Input 
-- textarea 
-- contentEditable
 
 ## extension
 - feat: About

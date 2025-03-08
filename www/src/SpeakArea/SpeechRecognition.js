@@ -98,8 +98,10 @@ export class SpeechRecognition extends AbstractInput {
             var phrase = result[0].transcript.trim();
 
             this.sentence = this.getSentence(phrase);
-            this.insertText();
-            this.updateSelectionRange();
+            this.inputNode.value = this.getText();
+            
+            var position = this.cursorPosition + this.sentence.length;
+            this.inputNode.setSelectionRange(position, position);
 
             if (this.isFinal) {
                 this.finalText = this.inputNode.value;
@@ -108,12 +110,7 @@ export class SpeechRecognition extends AbstractInput {
         }
     }
 
-    updateSelectionRange() {
-        var position = this.cursorPosition + this.sentence.length;
-        this.inputNode.setSelectionRange(position, position);
-    }
-
-    insertText() {
+    getText() {
         var start = this.inputNode.selectionStart;
         var end = this.inputNode.selectionEnd;
         this.finalText = this.finalText.slice(0, start) +
@@ -130,16 +127,17 @@ export class SpeechRecognition extends AbstractInput {
 
         var text = part1 + this.sentence + point + part2
         text = text
-            .replace(/\s+/g, ' ')
+            .replace(/\ +/g, ' ')
             .replace(/\n /g, '\n')
             .trim();
 
-        this.inputNode.value = text;
+       return text;
     }
 
     getSentence(phrase) {
         phrase = this.addPunctuation(phrase);
         var text = (this.sentence + ` ` + phrase).toLowerCase().trim();
+        text = text.replace(/\s+([!?.,;:])/, "$1");
 
         if (this.isUpper) {
             text = text.charAt(0).toUpperCase() + text.slice(1);
@@ -148,14 +146,8 @@ export class SpeechRecognition extends AbstractInput {
         return ' ' + text;
     }
 
-    get isUpper() {
-        var part = this.finalText.slice(0, this.cursorPosition).trim();
-        var lastChar = part[part.length - 1];
-        return !lastChar || lastChar.match(/[.,!?]/g);
-    }
-
     addPunctuation(text) {
-        const replacements = {
+        var replacements = {
             // en
             "period": ".",
             "comma": ",",
@@ -217,8 +209,14 @@ export class SpeechRecognition extends AbstractInput {
             "дефис": "-"
         };
 
-        const pattern = new RegExp(Object.keys(replacements).join("|"), "gi");
-        text = text.replace(pattern, (match) => replacements[match.toLowerCase()]);
-        return text.replace(/\s+([!?.,;:])/, "$1");
+        var pattern = new RegExp(Object.keys(replacements).join("|"), "gi");
+        text = text.replace(pattern, match => replacements[match.toLowerCase()]);
+        return text;
+    }
+
+    get isUpper() {
+        var part = this.finalText.slice(0, this.cursorPosition).trim();
+        var lastChar = part[part.length - 1];
+        return !lastChar || lastChar.match(/[.,!?]/g);
     }
 }
