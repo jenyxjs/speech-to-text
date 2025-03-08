@@ -121,15 +121,24 @@ export class SpeechRecognition extends AbstractInput {
 
         var part1 = this.finalText.slice(0, this.cursorPosition);
         var part2 = this.finalText.slice(this.cursorPosition);
-        var point = this.isUpper ? '. ' : ' ';
+
+        if (!this.isUpper || this.sentence.trim().match(/[.,!?](?=\s|$)/g)) {
+            var point = ' ';
+        } else {
+            var point = '. ';
+        }
 
         var text = part1 + this.sentence + point + part2
-        text = text.replace(/\ {2,}/g, ' ').replace(/\n /g, '\n').trim();
-        
+        text = text
+            .replace(/\s+/g, ' ')
+            .replace(/\n /g, '\n')
+            .trim();
+
         this.inputNode.value = text;
     }
 
     getSentence(phrase) {
+        phrase = this.addPunctuation(phrase);
         var text = (this.sentence + ` ` + phrase).toLowerCase().trim();
 
         if (this.isUpper) {
@@ -142,6 +151,74 @@ export class SpeechRecognition extends AbstractInput {
     get isUpper() {
         var part = this.finalText.slice(0, this.cursorPosition).trim();
         var lastChar = part[part.length - 1];
-        return !lastChar || lastChar == '.' ;
+        return !lastChar || lastChar.match(/[.,!?]/g);
+    }
+
+    addPunctuation(text) {
+        const replacements = {
+            // en
+            "period": ".",
+            "comma": ",",
+            "colon": ":",
+            "semicolon": ";",
+            "percent": "%",
+            "question mark": "?",
+            "exclamation mark": "!",
+            "hyphen": "-",
+
+            // es
+            "punto": ".",
+            "coma": ",",
+            "dos puntos": ":",
+            "punto y coma": ";",
+            "por ciento": "%",
+            "signo de interrogación": "?",
+            "signo de exclamación": "!",
+            "guión": "-",
+
+            // de
+            "punkt": ".",
+            "komma": ",",
+            "doppelpunkt": ":",
+            "strichpunkt": ";",
+            "prozent": "%",
+            "fragesymbol": "?",
+            "ausrufezeichen": "!",
+            "bindestrich": "-",
+
+            // fr
+            "point": ".",
+            "virgule": ",",
+            "deux points": ":",
+            "point virgule": ";",
+            "pour cent": "%",
+            "point d'interrogation": "?",
+            "point d'exclamation": "!",
+            "trait d'union": "-",
+
+            // it
+            "punto": ".",
+            "virgola": ",",
+            "due punti": ":",
+            "punto e virgola": ";",
+            "per cento": "%",
+            "punto interrogativo": "?",
+            "punto esclamativo": "!",
+            "trattino": "-",
+
+            // ru
+            "точка": ".",
+            "запятая": ",",
+            "двоеточие": ":",
+            "точка с запятой": ";",
+            "процент": "%",
+            "вопросительный знак": "?",
+            "восклицательный знак": "!",
+            "дефис": "-"
+        };
+
+        const pattern = new RegExp(Object.keys(replacements).join("|"), "gi");
+        text = text.replace(pattern, (match) => replacements[match.toLowerCase()]);
+        return text.replace(/\s+([!?.,;:])/, "$1");
     }
 }
