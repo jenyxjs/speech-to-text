@@ -11,7 +11,6 @@ export class SpeechRecognition extends AbstractInput {
 
             sentence: '',
             finalText: '',
-            currentText: '',
 
             isActive: false,
             currentState: 'stop',
@@ -92,7 +91,7 @@ export class SpeechRecognition extends AbstractInput {
             var result = event.results[i];
             var phrase = result[0].transcript.trim();
 
-            this.updateSentence(phrase);
+            this.sentence = this.getSentence(phrase);
 
             var part1 = this.finalText.slice(0, this.cursorPosition);
             var part2 = this.finalText.slice(this.cursorPosition);
@@ -109,15 +108,14 @@ export class SpeechRecognition extends AbstractInput {
         }
     }
 
-    updateSentence(phrase) {
+    getSentence(phrase) {
         var text = (this.sentence + ` ` + phrase).toLowerCase().trim();
 
         if (this.isUpper) {
-            var firstChar = text.charAt(0).toUpperCase();
-            text = firstChar + text.slice(1).toLowerCase();
+            text = text.charAt(0).toUpperCase() + text.slice(1);
         }
 
-        this.sentence = ' ' + text;
+        return ' ' + text;
     }
 
     autoFormat(str) {

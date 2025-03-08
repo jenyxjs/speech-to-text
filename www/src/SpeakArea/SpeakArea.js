@@ -32,12 +32,7 @@ export class SpeakArea extends Control {
                             text: COPY_SVG,
                         },
                     },
-                    style: [
-                        'flex-direction: column',
-                        'display: flex',
-                        'gap: 1rem',
-                    ],
-                }
+                },
             },
             style: [
                 'display: flex',
@@ -61,7 +56,8 @@ export class SpeakArea extends Control {
         var { speechRecognition, textArea } = this;
         var { micButton, copyButton } = this.panel;
 
-        speechRecognition.bind('isActive', this, 'refresh', { run: true });
+        speechRecognition.bind('isActive', this, 'refresh');
+        speechRecognition.bind('finalText', this, 'refresh', { run: true });
 
         micButton.on('click', event => {
             speechRecognition.isActive = !speechRecognition.isActive;
@@ -71,17 +67,17 @@ export class SpeakArea extends Control {
         copyButton.on('click', event => {
             navigator.clipboard.writeText(textArea.node.value);
             speechRecognition.reset();
+            this.refresh();
         });
     }
 
     refresh() {
         var { micButton, copyButton } = this.panel;
-        var text = this.textArea.node.value;
-
+        
         micButton.selected = this.speechRecognition.isActive;
         copyButton.selected = this.speechRecognition.isActive;
-
-        micButton.visible = !text;
-        copyButton.visible = text;
+        
+        copyButton.visible = this.textArea.node.value;
+        micButton.visible = !copyButton.visible;
     }
 }
