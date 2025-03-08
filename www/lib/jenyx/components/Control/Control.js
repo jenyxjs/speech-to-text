@@ -2,7 +2,7 @@ import { Component } from '../Component/Component.js';
 import { createElement } from './createElement.js';
 
 export class Control extends Component {
-	constructor(options) {
+	constructor (options) {
 		super();
 
 		this.defineProperty('node', { enumerable: false });
@@ -16,7 +16,7 @@ export class Control extends Component {
 
 	static stylesheet = createElement('style', document.head).sheet;
 
-	static async init() {
+	static async init () {
 		this.node.className = this.className;
 
 		this.on('name', event => {
@@ -24,11 +24,11 @@ export class Control extends Component {
 		});
 	}
 
-	get visible() {
+	get visible () {
 		return this._.visible;
 	}
 
-	set visible(visible) {
+	set visible (visible) {
 		if (this.visible != visible) {
 			this._.visible = visible;
 			this.refreshVisible();
@@ -36,7 +36,7 @@ export class Control extends Component {
 		}
 	}
 
-	refreshVisible() {
+	refreshVisible () {
 		if (this.visible) {
 			var display = this._.styleIndex?.display || '';
 		} else {
@@ -46,11 +46,11 @@ export class Control extends Component {
 		this.node.style.display = display;
 	}
 
-	get style() {
+	get style () {
 		return this._.style || [];
 	}
 
-	set style(style) {
+	set style (style) {
 		if (typeof style == 'string') style = style.split(';');
 		this._.styleIndex = concatStyle(this.style, style);
 		this._.style = indexToStyle(this._.styleIndex);
@@ -58,7 +58,7 @@ export class Control extends Component {
 		this.refreshVisible();
 	}
 
-	get className() {
+	get className () {
 		var cssName = [];
 		var constructor = this.constructor;
 
@@ -72,15 +72,15 @@ export class Control extends Component {
 		return 'jn-' + cssName.join('-');
 	}
 
-	get parentNode() {
+	get parentNode () {
 		return this.node.parentNode;
 	}
 
-	set parentNode(parentNode) {
+	set parentNode (parentNode) {
 		this.node && parentNode.appendChild(this.node);
 	}
 
-	set options(options) {
+	set options (options) {
 		if (options?.node) {
 			for (var attr in options.node) {
 				this.node[attr] = options.node[attr];
@@ -91,7 +91,7 @@ export class Control extends Component {
 		super.options = options;
 	}
 
-	appendChild(name, child) {
+	appendChild (name, child) {
 		super.appendChild(name, child);
 
 		if (child.parentNode) {
@@ -104,13 +104,13 @@ export class Control extends Component {
 		}
 	}
 
-	removeChildren() {
+	removeChildren () {
 		this.node.innerHTML = '';
 		super.removeChildren();
 	}
 }
 
-function concatStyle(styles1, styles2) {
+function concatStyle (styles1, styles2) {
 	var index = {};
 
 	styles1.forEach(value => {
@@ -130,7 +130,7 @@ function concatStyle(styles1, styles2) {
 	return index;
 }
 
-function indexToStyle(index) {
+function indexToStyle (index) {
 	var style = [];
 
 	for (var i in index) {

@@ -1,20 +1,19 @@
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
 
 export class AbstractInput extends Control {
-    constructor (options) {
+    constructor(options) {
         super({
             tagName: options?.tagName || 'input',
             text: '',
             placeholder: '',
             keyupChange: false,
             style: [
-                'width: 100%',
-                'font-size: 16px',
-                'box-sizing: border-box',
                 'font-family: inherit',
                 'background: inherit',
                 'color: inherit',
                 'outline: none',
+                'box-sizing: border-box',
+                'width: 100%',
                 'border: 0',
             ],
             options
@@ -23,7 +22,7 @@ export class AbstractInput extends Control {
         AbstractInput.init.call(this);
     }
 
-    static async init () {
+    static async init() {
         this.bind('text', this.node, 'value');
         this.bind('placeholder', this.node, 'placeholder');
 
@@ -61,7 +60,7 @@ export class AbstractInput extends Control {
         });
     }
 
-    focus () {
+    focus() {
         setTimeout(this.node.focus.bind(this.node));
     };
 }

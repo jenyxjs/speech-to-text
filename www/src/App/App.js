@@ -12,7 +12,10 @@ export class App extends AbstractApp {
 			speakArea: {
 				class: SpeakArea,
 				parentNode: document.body,
-				style: ['padding: 1rem']
+				style: [
+					'padding: 1rem',
+					'max-width: 32rem',
+				]
 			},
 			linkButton: {
 				class: LinkButton,

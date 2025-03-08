@@ -1,7 +1,3 @@
-<p align="right">
-<img src="docs/logo.svg" alt="Jenyx Logo" width="120">
-</p>
-
 # Speech to Text
 
 **Speech to Text** is an application developed using the [Jenyx](https://github.com/jenyxjs/jenyx) library. It provides a user-friendly interface to convert speech into text using modern web technologies.

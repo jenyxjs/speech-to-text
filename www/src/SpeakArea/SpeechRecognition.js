@@ -1,4 +1,4 @@
-import { AbstractInput } from '../Input/AbstractInput.js';
+import { AbstractInput } from '../../lib/jenyx/components/Input/AbstractInput.js';
 
 export class SpeechRecognition extends AbstractInput {
     constructor(options) {

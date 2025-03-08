@@ -1,12 +1,14 @@
-import { AbstractInput } from '../../components/Input/AbstractInput.js';
+import { AbstractInput } from './AbstractInput.js';
 
 export class Input extends AbstractInput {
-    constructor (options) {
+    constructor(options) {
         super({
             tagName: options?.tagName || 'input',
             type: 'text',
-            style: [
-                'border-bottom: 1px solid var(--ax-grey-bg)'
+            style: [                
+                'width: 100%',                
+                'padding: 0.5rem',
+                'border: 1px solid #ccc',
             ],
             options
         });
@@ -14,7 +16,7 @@ export class Input extends AbstractInput {
         Input.init.call(this);
     }
 
-    static async init () {
+    static async init() {
         this.bind('type', this.node, 'type');
     }
 }
