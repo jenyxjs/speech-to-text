@@ -1,5 +1,5 @@
 import { Component } from '../../lib/jenyx/components/Component/Component.js'
-import { CssRule } from '../CssRule/CssRule.js';
+import { CssRule } from './CssRule.js';
 
 export class InitCssTheme extends Component {
     constructor(options) {

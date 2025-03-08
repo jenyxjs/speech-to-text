@@ -4,9 +4,7 @@ export class LinkButton extends ActiveControl {
     constructor (options) {
         super({
             style: [
-                'cursor: pointer',
                 'color: var(--jn-link)',
-                'filter: none',
             ],
             styleSet: {
                 hovered: [

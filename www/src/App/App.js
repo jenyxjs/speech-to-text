@@ -1,6 +1,6 @@
-import { AbstractApp } from '../AbstractApp/AbstractApp.js'
-import { InitCssTheme } from './InitCssTheme.js';
-import { LinkButton } from '../LinkButton/LinkButton.js';
+import { AbstractApp } from './AbstractApp.js'
+import { InitCssTheme } from '../Css/InitCssTheme.js';
+import { LinkButton } from '../Button/LinkButton.js';
 import { SpeakArea } from '../SpeakArea/SpeakArea.js';
 
 export class App extends AbstractApp {
@@ -13,16 +13,18 @@ export class App extends AbstractApp {
 				class: SpeakArea,
 				parentNode: document.body,
 				style: [
-					'padding: 1rem',
 					'max-width: 32rem',
+					'padding: 1rem',
 				]
 			},
 			linkButton: {
 				class: LinkButton,
 				parentNode: document.body,
-				style: ['padding: 1rem'],
 				text: 'Jenyx',
 				href: 'https://github.com/jenyxjs/speech-to-text',
+				style: [
+					'padding: 1rem'
+				],
 			},
 		});
 	}

@@ -1,4 +1,4 @@
-import { Control } from '../../lib/jenyx/components/Control/Control.js';
+import { Control } from '../Control/Control.js';
 
 export class AbstractInput extends Control {
     constructor(options) {
