@@ -11,7 +11,8 @@ export class InitCssTheme extends Component {
                 'height: 100%',
                 'max-height: 100%',
                 'margin: 0',
-                'font-family: monospace',
+                'font-family: sans-serif',
+                'font-size: 16px',
             ]
         });
 

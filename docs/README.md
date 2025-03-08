@@ -3,7 +3,6 @@
 // Use Conventional Commits for future commits
 
 ## demo.html
-- feat: add GoogleAnalytics
 - feat: add Input 
 - feat: add textarea 
 - feat: add contentEditable

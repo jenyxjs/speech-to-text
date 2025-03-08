@@ -1,4 +1,4 @@
-import { AbstractApp } from './AbstractApp.js'
+import { AbstractApp } from '../AbstractApp/AbstractApp.js'
 import { InitCssTheme } from '../Css/InitCssTheme.js';
 import { GoogleAnalytics } from '../GoogleAnalytics/GoogleAnalytics.js';
 import { SpeakArea } from '../SpeakArea/SpeakArea.js';

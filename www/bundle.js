@@ -76,7 +76,7 @@ class Listener {
 
 
 class Component {
-    constructor(options) {
+    constructor (options) {
         Object.defineProperty(this, '_', { enumerable: false, value: {} });
         this.defineProperty('name', { enumerable: false });
         this.defineProperty('host', { enumerable: false });
@@ -89,7 +89,7 @@ class Component {
 
     static version = '0.x';
 
-    get fullname() {
+    get fullname () {
         var fullname = [];
 
         var constructor = this.constructor;
@@ -102,25 +102,25 @@ class Component {
         return fullname.join('_');
     }
 
-    get listeners() {
+    get listeners () {
         return this._.listeners;
     }
 
-    set listeners(listeners) {
+    set listeners (listeners) {
         for (var type in listeners) {
             var handler = listeners[type];
             this.on(type, handler);
         }
     }
 
-    removeListeners(type) {
+    removeListeners (type) {
         for (var i in this._.listeners) {
             var listener = this._.listeners[i];
             (listener.type == type) && listener.remove();
         }
     }
 
-    emit(type, value) {
+    emit (type, value) {
         var event = new Event({
             targetType: type,
             type: type,
@@ -138,7 +138,7 @@ class Component {
         });
     }
 
-    on(type, handler, options) {
+    on (type, handler, options) {
         return new Listener({
             context: this,
             type: type,
@@ -150,7 +150,7 @@ class Component {
         });
     }
 
-    wait(type, options) {
+    wait (type, options) {
         if (this[type]) return this[type];
 
         return new Promise(resolve => {
@@ -161,7 +161,7 @@ class Component {
         });
     }
 
-    bind(type, object, key, options) {
+    bind (type, object, key, options) {
         key ||= type;
 
         if (typeof object[key] == 'function') {
@@ -171,13 +171,13 @@ class Component {
         }
     }
 
-    _bindFunction(type, object, key, options) {
+    _bindFunction (type, object, key, options) {
         this.on(type, event => {
             object[key].call(object, event, this[type]);
         }, options);
     }
 
-    _bindProperty(type, object, key, options) {
+    _bindProperty (type, object, key, options) {
         var runOptions = { ...options, run: true };
 
         this.on(type, event => {
@@ -189,7 +189,7 @@ class Component {
         }, runOptions);
     }
 
-    defineProperty(name, options) {
+    defineProperty (name, options) {
         var enumerable = (options?.enumerable === false) ? false : true;
 
         Object.defineProperty(this, name, {
@@ -206,7 +206,7 @@ class Component {
         });
     }
 
-    set options(options) {
+    set options (options) {
         for (var name in options) {
             var value = options[name];
             var newClass = value?.class;
@@ -232,11 +232,11 @@ class Component {
         this.emit('options', options);
     }
 
-    get children() {
+    get children () {
         return this._.children;
     }
 
-    set children(children) {
+    set children (children) {
         for (var name in children) {
             var value = children[name];
 
@@ -249,7 +249,7 @@ class Component {
         this.emit('children');
     }
 
-    getNewClass(name, value = {}) {
+    getNewClass (name, value = {}) { 
         var { class: Class, ...newOptions } = Object.assign({
             name: name,
             host: this,
@@ -258,7 +258,7 @@ class Component {
         return new Class(newOptions);
     }
 
-    appendChild(name, child) {
+    appendChild (name, child) {
         child.parent = this;
         this._.children[name] = child;
 
@@ -274,12 +274,12 @@ class Component {
         this.emit('child', child);
     }
 
-    removeChildren() {
+    removeChildren () {
         this._.children = {};
         this.emit('child');
     }
 
-    replaceChildren(children) {
+    replaceChildren (children) {
         this.removeChildren();
         this.children = children;
     }
@@ -296,7 +296,7 @@ class AbstractApp extends Component {
     }
 }
 
-function createElement(tagName, parentNode, attrs, css) {
+function createElement (tagName, parentNode, attrs, css) {
 	var node = document.createElement(tagName);
 
 	parentNode?.appendChild(node);
@@ -375,8 +375,31 @@ class InitCssTheme extends Component {
     }
 }
 
+class GoogleAnalytics extends Component {
+    constructor(options) {
+        super({
+            id: '',
+            options
+        });
+
+        GoogleAnalytics.init.call(this);
+    }
+
+    static init() {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${this.id}`;
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', this.id);        
+    }
+}
+
 class Control extends Component {
-	constructor(options) {
+	constructor (options) {
 		super();
 
 		this.defineProperty('node', { enumerable: false });
@@ -390,7 +413,7 @@ class Control extends Component {
 
 	static stylesheet = createElement('style', document.head).sheet;
 
-	static async init() {
+	static async init () {
 		this.node.className = this.className;
 
 		this.on('name', event => {
@@ -398,11 +421,11 @@ class Control extends Component {
 		});
 	}
 
-	get visible() {
+	get visible () {
 		return this._.visible;
 	}
 
-	set visible(visible) {
+	set visible (visible) {
 		if (this.visible != visible) {
 			this._.visible = visible;
 			this.refreshVisible();
@@ -410,7 +433,7 @@ class Control extends Component {
 		}
 	}
 
-	refreshVisible() {
+	refreshVisible () {
 		if (this.visible) {
 			var display = this._.styleIndex?.display || '';
 		} else {
@@ -420,11 +443,11 @@ class Control extends Component {
 		this.node.style.display = display;
 	}
 
-	get style() {
+	get style () {
 		return this._.style || [];
 	}
 
-	set style(style) {
+	set style (style) {
 		if (typeof style == 'string') style = style.split(';');
 		this._.styleIndex = concatStyle(this.style, style);
 		this._.style = indexToStyle(this._.styleIndex);
@@ -432,7 +455,7 @@ class Control extends Component {
 		this.refreshVisible();
 	}
 
-	get className() {
+	get className () {
 		var cssName = [];
 		var constructor = this.constructor;
 
@@ -445,15 +468,15 @@ class Control extends Component {
 		return 'jn-' + cssName.join('-');
 	}
 
-	get parentNode() {
+	get parentNode () {
 		return this.node.parentNode;
 	}
 
-	set parentNode(parentNode) {
+	set parentNode (parentNode) {
 		this.node && parentNode.appendChild(this.node);
 	}
 
-	set options(options) {
+	set options (options) {
 		if (options?.node) {
 			for (var attr in options.node) {
 				this.node[attr] = options.node[attr];
@@ -464,7 +487,7 @@ class Control extends Component {
 		super.options = options;
 	}
 
-	appendChild(name, child) {
+	appendChild (name, child) {
 		super.appendChild(name, child);
 
 		if (child.parentNode) {
@@ -477,13 +500,13 @@ class Control extends Component {
 		}
 	}
 
-	removeChildren() {
+	removeChildren () {
 		this.node.innerHTML = '';
 		super.removeChildren();
 	}
 }
 
-function concatStyle(styles1, styles2) {
+function concatStyle (styles1, styles2) {
 	var index = {};
 
 	styles1.forEach(value => {
@@ -503,7 +526,7 @@ function concatStyle(styles1, styles2) {
 	return index;
 }
 
-function indexToStyle(index) {
+function indexToStyle (index) {
 	var style = [];
 
 	for (var i in index) {
@@ -511,6 +534,99 @@ function indexToStyle(index) {
 	}
 
 	return style;
+}
+
+class AbstractInput extends Control {
+    constructor(options) {
+        super({
+            tagName: options?.tagName || 'input',
+            text: '',
+            placeholder: '',
+            keyupChange: false,
+            style: [
+                'font-family: inherit',
+                'background: inherit',
+                'color: inherit',
+                'outline: none',
+                'box-sizing: border-box',
+                'width: 100%',
+                'border: 0',
+            ],
+            options
+        });
+
+        AbstractInput.init.call(this);
+    }
+
+    static async init() {
+        this.bind('text', this.node, 'value');
+        this.bind('placeholder', this.node, 'placeholder');
+
+        this.node.tabIndex = 0;
+
+        this.node.addEventListener('change', event => {
+            this.text = this.node.value;
+        });
+
+        this.node.addEventListener('input', event => {
+            this.text = this.node.value;
+            this.emit('input', this.node.value);
+        });
+
+        this.node.addEventListener('keyup', event => {
+            if (this.keyupChange) {
+                this.text = this.node.value;
+            }
+
+            if (event.keyCode == 13) {
+                this.emit('enter');
+                this.node.click();
+            } else if (event.keyCode == 9 && this.node == document.activeElement) {
+                this.node.style.outline = 'auto';
+            }
+        });
+
+        this.node.addEventListener('blur', event => {
+            this.node.style.outline = 'none';
+            this.emit('blur');
+        });
+
+        this.node.addEventListener('focus', event => {
+            this.emit('focus');
+        });
+    }
+
+    focus() {
+        setTimeout(this.node.focus.bind(this.node));
+    };
+}
+
+class Textarea extends AbstractInput {
+    constructor(options) {
+        super({
+            tagName: 'textarea',
+            style: [
+                'resize: none',
+                'overflow-y: hidden',
+            ],
+            options
+        });
+
+        Textarea.init.call(this);
+    }
+
+    static async init() {
+        ['focus', 'input', 'cut', 'paste', 'selectionchange'].forEach(value => {
+            this.node.addEventListener(value, this.auroresize.bind(this));
+        });
+
+        this.on('text', this.auroresize.bind(this));
+    }
+
+    auroresize() {
+        this.node.style.height = 'auto';
+        this.node.style.height = this.node.scrollHeight + 'px';
+    }
 }
 
 class ActiveControl extends Control {
@@ -694,118 +810,6 @@ class ActiveControl extends Control {
     }
 }
 
-class LinkButton extends ActiveControl {
-    constructor (options) {
-        super({
-            style: [
-                'cursor: pointer',
-                'color: var(--jn-link)',
-                'filter: none',
-            ],
-            styleSet: {
-                hovered: [
-                    'filter: brightness(0.8)',
-                ],
-            },
-            options
-        });
-    }
-}
-
-class AbstractInput extends Control {
-    constructor (options) {
-        super({
-            tagName: options?.tagName || 'input',
-            text: '',
-            placeholder: '',
-            keyupChange: false,
-            style: [
-                'width: 100%',
-                'font-size: 16px',
-                'box-sizing: border-box',
-                'font-family: inherit',
-                'background: inherit',
-                'color: inherit',
-                'outline: none',
-                'border: 0',
-            ],
-            options
-        });
-
-        AbstractInput.init.call(this);
-    }
-
-    static async init () {
-        this.bind('text', this.node, 'value');
-        this.bind('placeholder', this.node, 'placeholder');
-
-        this.node.tabIndex = 0;
-
-        this.node.addEventListener('change', event => {
-            this.text = this.node.value;
-        });
-
-        this.node.addEventListener('input', event => {
-            this.text = this.node.value;
-            this.emit('input', this.node.value);
-        });
-
-        this.node.addEventListener('keyup', event => {
-            if (this.keyupChange) {
-                this.text = this.node.value;
-            }
-
-            if (event.keyCode == 13) {
-                this.emit('enter');
-                this.node.click();
-            } else if (event.keyCode == 9 && this.node == document.activeElement) {
-                this.node.style.outline = 'auto';
-            }
-        });
-
-        this.node.addEventListener('blur', event => {
-            this.node.style.outline = 'none';
-            this.emit('blur');
-        });
-
-        this.node.addEventListener('focus', event => {
-            this.emit('focus');
-        });
-    }
-
-    focus () {
-        setTimeout(this.node.focus.bind(this.node));
-    };
-}
-
-class Textarea extends AbstractInput {
-    constructor(options) {
-        super({
-            tagName: 'textarea',
-            style: [
-                'resize: none',
-                'overflow-y: hidden',
-            ],
-            options
-        });
-
-        Textarea.init.call(this);
-    }
-
-    static async init() {
-        ['focus', 'input', 'cut', 'paste'].forEach(value => {
-            this.node.addEventListener(value, this.auroresize.bind(this));
-        });
-
-        this.on('text', this.auroresize.bind(this));
-    }
-
-    auroresize() {
-        this.node.style.height = 'auto';
-        this.node.style.height = this.node.scrollHeight + 'px';
-    }
-}
-
 class Button extends ActiveControl {
     constructor(options) {
         super({
@@ -815,22 +819,21 @@ class Button extends ActiveControl {
                 'justify-content: center',
                 'text-decoration: none',
                 'cursor: pointer',
+                'box-sizing: border-box',
+                'border-radius: 3rem',
+                'width: 3rem',
+                'padding: .7rem',
                 'border: 1px solid var(--jn-border)',
                 'background: var(--jn-primary)',
                 'color: var(--jn-text)',
                 'fill: var(--jn-text)',
-                'box-sizing: border-box',
-                'border-radius: 2.5rem',
-                'padding: .7rem',
-                'width: 3rem',
-                'filter: none',
             ],
             styleSet: {
                 hovered: [
                     'filter: brightness(1.05)',
                 ],
                 selected: [
-                    'filter: drop-shadow(0px 0px 2px black)',
+                    'filter: drop-shadow(0px 0px 1px red)',
                 ],
             },
             options
@@ -844,13 +847,226 @@ var MIC_SVG = `<svg style="width: 100%; height: 100%; transform: scale(1.0); str
 var COPY_SVG = `<svg style="width: 100%; height: 100%; transform: scale(1.0); stroke-width: 0px; stroke: var(--jn-text);" viewBox="0 -960 960 960">
 <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`;
 
+class SpeechRecognition extends AbstractInput {
+    constructor(options) {
+        super({
+            inputNode: null,
+            lang: navigator.language,
+
+            inputCursorPosition: 0,
+            cursorPosition: 0,
+
+            sentence: '',
+            finalText: '',
+
+            isFinal: false,
+            isActive: false,
+            currentState: 'stop',
+
+            recognition: {
+                class: window.SpeechRecognition
+                    || window.webkitSpeechRecognition,
+            },
+            options
+        });
+
+        this.recognition.interimResults = true;
+        this.recognition.continuous = true;
+        this.bind('lang', this.recognition);
+
+        SpeechRecognition.init.call(this);
+    }
+
+    static async init() {
+        this.recognitionInit();
+        this.inputInit();
+    };
+
+    async inputInit() {
+        await this.wait('inputNode');
+
+        this.inputNode.addEventListener('selectionchange', () => {
+            this.inputCursorPosition = this.inputNode.selectionStart;
+
+            if (this.isFinal) {
+                this.finalText = this.inputNode.value;
+            }
+        });
+
+        this.inputNode.addEventListener('click', () => {
+            this.cursorPosition = this.inputNode.selectionStart;
+        });
+
+        this.inputNode.addEventListener('keyup', () => {
+            this.cursorPosition = this.inputNode.selectionStart;
+        });
+    }
+
+    recognitionInit() {
+        this.recognition.addEventListener('result', event => {
+            this.update(event);
+        });
+
+        this.recognition.addEventListener('start', event => {
+            this.currentState = 'start';
+        });
+
+        this.recognition.addEventListener('end', event => {
+            this.currentState = 'stop';
+            this.restart();
+        });
+
+        this.bind('isActive', this, 'restart', { run: true });
+    }
+
+    async restart() {
+        if (this.currentState == 'start') {
+            this.recognition.stop();
+        } else {
+            this.isActive && setTimeout(() => {
+                this.recognition.start();
+            }, 100);
+        }
+    }
+
+    reset() {
+        this.finalText = '';
+        this.inputNode.value = '';
+        this.cursorPosition = 0;
+        this.restart();
+    }
+
+    update(event) {
+        this.sentence = '';
+
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            var result = event.results[i];
+            this.isFinal = result.isFinal;
+            var phrase = result[0].transcript.trim();
+
+            this.sentence = this.getSentence(phrase);
+            this.inputNode.value = this.getText();
+
+            var position = this.cursorPosition + this.sentence.length;
+            this.inputNode.setSelectionRange(position, position);
+
+            if (this.isFinal) {
+                this.finalText = this.inputNode.value;
+                this.cursorPosition += this.sentence.length + 1;
+            }
+        }
+    }
+
+    getText() {
+        var start = this.inputNode.selectionStart;
+        var end = this.inputNode.selectionEnd;
+        this.finalText =
+            this.finalText.slice(0, start) +
+            this.finalText.slice(end);
+
+        var part1 = this.finalText.slice(0, this.cursorPosition);
+        var part2 =  this.finalText.slice(this.cursorPosition);
+
+        var needPoint = (this.isUpper && !this.sentence.trim().match(/[.,;!?](?=\s|$)/g));
+        var point = needPoint ? '.' : '';
+
+        var text = part1 + ' ' + this.sentence + point + ' ' + part2;
+        text = text
+            .replace(/\ +/g, ' ')
+            .replace(/\n /g, '\n');
+
+       return text.trim();
+    }
+
+    getSentence(phrase) {
+        phrase = this.addPunctuation(phrase);
+        var text = (this.sentence + ' ' + phrase).toLowerCase().trim();
+
+        if (this.isUpper) {
+            text = text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        return (' ' + text).replace(/\s+([.,!?:;])/g, "$1");
+    }
+
+    addPunctuation(text) {        
+        var replacements = {
+            // en
+            "period": ".",
+            "comma": ",",
+            "colon": ":",
+            "semicolon": ";",
+            "percent": "%",
+            "question mark": "?",
+            "exclamation mark": "!",
+            "hyphen": "-",
+
+            // es
+            "punto y coma": ";",
+            "punto": ".",
+            "coma": ",",
+            "dos puntos": ":",
+            "por ciento": "%",
+            "signo de interrogación": "?",
+            "signo de exclamación": "!",
+            "guión": "-",
+
+            // de
+            "punkt": ".",
+            "komma": ",",
+            "doppelpunkt": ":",
+            "strichpunkt": ";",
+            "prozent": "%",
+            "fragesymbol": "?",
+            "ausrufezeichen": "!",
+            "bindestrich": "-",
+
+            // fr
+            "point d'exclamation": "!",
+            "point d'interrogation": "?",
+            "point virgule": ";",
+            "point": ".",
+            "virgule": ",",
+            "deux points": ":",
+            "pour cent": "%",
+            "trait d'union": "-",
+
+            // it
+            "punto interrogativo": "?",
+            "punto esclamativo": "!",
+            "punto": ".",
+            "virgola": ",",
+            "due punti": ":",
+            "punto e virgola": ";",
+            "per cento": "%",
+            "trattino": "-",
+
+            // ru
+            "точка с запятой": ";",
+            "точка": ".",
+            "запятая": ",",
+            "двоеточие": ":",
+            "процент": "%",
+            "вопросительный знак": "?",
+            "восклицательный знак": "!",
+            "дефис": "-"
+        };
+
+        var pattern = new RegExp(Object.keys(replacements).join("|"), "gi");
+        text = text.replace(pattern, match => replacements[match.toLowerCase()]);
+        return text;
+    }
+
+    get isUpper() {
+        var part = this.finalText.slice(0, this.cursorPosition).trim();
+        var lastChar = part[part.length - 1];
+        return !lastChar || lastChar.match(/[.,!?]/g);
+    }
+}
+
 class SpeakArea extends Control {
     constructor(options) {
         super({
-            empty: true,
-            speechRecognition: {
-                class: SpeechRecognition,
-            },
             children: {
                 textArea: {
                     class: Textarea,
@@ -875,12 +1091,7 @@ class SpeakArea extends Control {
                             text: COPY_SVG,
                         },
                     },
-                    style: [
-                        'flex-direction: column',
-                        'display: flex',
-                        'gap: 1rem',
-                    ],
-                }
+                },
             },
             style: [
                 'display: flex',
@@ -890,6 +1101,13 @@ class SpeakArea extends Control {
             options
         });
 
+        this.options = {
+            speechRecognition: {
+                class: SpeechRecognition,
+                inputNode: this.textArea.node,
+            }
+        };
+
         SpeakArea.init.call(this);
     }
 
@@ -897,8 +1115,8 @@ class SpeakArea extends Control {
         var { speechRecognition, textArea } = this;
         var { micButton, copyButton } = this.panel;
 
-        textArea.bind('text', this, 'refresh');
-        speechRecognition.bind('isActive', this, 'refresh', { run: true });
+        speechRecognition.bind('isActive', this, 'refresh');
+        speechRecognition.bind('finalText', this, 'refresh', { run: true });
 
         micButton.on('click', event => {
             speechRecognition.isActive = !speechRecognition.isActive;
@@ -907,108 +1125,35 @@ class SpeakArea extends Control {
 
         copyButton.on('click', event => {
             navigator.clipboard.writeText(textArea.node.value);
-            speechRecognition.restart();
+            speechRecognition.reset();
+            this.refresh();
         });
-
-        speechRecognition.bind('currentText', textArea, 'text');
     }
 
     refresh() {
         var { micButton, copyButton } = this.panel;
-        var text = this.textArea.node.value;
-
-        micButton.visible = !text;
+        
         micButton.selected = this.speechRecognition.isActive;
-
-        copyButton.visible = text;
         copyButton.selected = this.speechRecognition.isActive;
+        
+        copyButton.visible = this.textArea.node.value;
+        micButton.visible = !copyButton.visible;
     }
 }
 
-class SpeechRecognition extends Component {
-    constructor(options) {
+class LinkButton extends ActiveControl {
+    constructor (options) {
         super({
-            recognition: {
-                class: window.SpeechRecognition || window.webkitSpeechRecognition,
+            style: [
+                'color: var(--jn-link)',
+            ],
+            styleSet: {
+                hovered: [
+                    'filter: brightness(0.8)',
+                ],
             },
-            lang: navigator.language,
-            isActive: false,
-            currentState: 'stop',
-            carriagePosition: 0,
-            currentText: '',
-            transcripted: '',
             options
         });
-
-        this.recognition.interimResults = true;
-        this.recognition.continuous = true;
-        this.bind('lang', this.recognition);
-
-        SpeechRecognition.init.call(this);
-    }
-
-    static async init() {
-        this.recognition.addEventListener('result', event => {
-            this.update(event);
-        });
-
-        this.recognition.addEventListener('start', event => {
-            this.currentState = 'start';
-        });
-
-        this.recognition.addEventListener('end', event => {
-            this.currentState = 'stop';
-            this.start();
-        });
-
-        this.bind('isActive', this, 'restart', { run: true });
-    };
-
-    async restart() {
-        if (this.currentState == 'start') {
-            this.recognition.stop();
-        } else {
-            this.start();
-        }
-    }
-
-    start() {
-        this.isActive && setTimeout(() => {
-            this.transcripted = '';
-            this.currentText = '';
-            this.carriagePosition = 0;
-            this.recognition.start();
-        }, 100);
-    }
-
-    update(event) {
-        var sentence = '';
-
-        for (var i = event.resultIndex; i < event.results.length; i++) {
-            var result = event.results[i];
-            var newText = result[0].transcript.trim();
-
-            if (!sentence) {
-                newText = newText.charAt(0).toUpperCase() + newText.slice(1);
-            }
-
-            if (result.isFinal && newText) {
-                var space = this.transcripted ? ` ` : ``;
-                this.transcripted += space + newText + '.';
-
-                this.currentText = this.transcripted;
-                this.emit('finalText', newText);
-            } else {
-                sentence += (sentence ? ` ` : ``) + newText;
-                this.insertTextToCarriagePosition(sentence);
-                this.emit('tmpText', sentence);
-            }
-        }
-    }
-
-    insertTextToCarriagePosition(sentence) {
-        var outerSpace = this.transcripted ? ` ` : ``;
-        this.currentText = this.transcripted + outerSpace + sentence;
     }
 }
 
@@ -1021,14 +1166,23 @@ class App extends AbstractApp {
 			speakArea: {
 				class: SpeakArea,
 				parentNode: document.body,
-				style: ['padding: 1rem']
+				style: [
+					'max-width: 32rem',
+					'padding: 1rem',
+				]
 			},
 			linkButton: {
 				class: LinkButton,
 				parentNode: document.body,
-				style: ['padding: 1rem'],
-				text: 'Jenyx',
+				text: 'Download Chrome extension',
 				href: 'https://github.com/jenyxjs/speech-to-text',
+				style: [
+					'padding: 1.25rem'
+				],
+			},
+			googleAnalytics: {
+				class: GoogleAnalytics,
+				id: 'G-ELXBKNLREG',
 			},
 		});
 	}
