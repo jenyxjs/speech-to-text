@@ -1,6 +1,7 @@
 import { Label } from '../../lib/jenyx/components/Label/Label.js';
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
 import { Textarea } from '../../lib/jenyx/components/Input/Textarea.js';
+import { Input } from '../../lib/jenyx/components/Input/Input.js';
 import { AbstractApp } from '../AbstractApp/AbstractApp.js'
 import { InitCssTheme } from '../Css/InitCssTheme.js';
 import { GoogleAnalytics } from '../GoogleAnalytics/GoogleAnalytics.js';
@@ -15,7 +16,7 @@ export class App extends AbstractApp {
                 children: {
                     titleLabel: {
                         class: Label,
-                        text: 'Speech to Text - Demo',
+                        text: 'Jenyx Speech to Text - Demo',
                         style: [
                             'font-size: 1.5rem',
                         ],
@@ -27,6 +28,18 @@ export class App extends AbstractApp {
                         style: [
                             'font-size: .75rem',
                         ],
+                    },
+                    input: {
+                        class: Input,
+                        placeholder: 'Input text',
+                        style: [
+                            'display: flex',
+                            'max-width: 32rem',
+                            'border-radius: 1em',
+                            'padding: 1rem',
+                            'background: var(--jn-primary)',
+                            'border: 1px solid var(--jn-border)',
+                        ]
                     },
                     textarea: {
                         class: Textarea,
