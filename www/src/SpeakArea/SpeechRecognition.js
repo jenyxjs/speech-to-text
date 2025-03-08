@@ -99,7 +99,7 @@ export class SpeechRecognition extends AbstractInput {
 
             this.sentence = this.getSentence(phrase);
             this.inputNode.value = this.getText();
-            
+
             var position = this.cursorPosition + this.sentence.length;
             this.inputNode.setSelectionRange(position, position);
 
@@ -119,31 +119,26 @@ export class SpeechRecognition extends AbstractInput {
         var part1 = this.finalText.slice(0, this.cursorPosition);
         var part2 = this.finalText.slice(this.cursorPosition);
 
-        if (!this.isUpper || this.sentence.trim().match(/[.,!?](?=\s|$)/g)) {
-            var point = ' ';
-        } else {
-            var point = '. ';
-        }
+        var needPoint = (this.isUpper && !this.sentence.trim().match(/[.,!?](?=\s|$)/g));
+        var point = needPoint ? '. ' : '';
 
         var text = part1 + this.sentence + point + part2
         text = text
             .replace(/\ +/g, ' ')
-            .replace(/\n /g, '\n')
-            .trim();
+            .replace(/\n /g, '\n');
 
-       return text;
+       return text.trim();
     }
 
     getSentence(phrase) {
         phrase = this.addPunctuation(phrase);
-        var text = (this.sentence + ` ` + phrase).toLowerCase().trim();
-        text = text.replace(/\s+([!?.,;:])/, "$1");
+        var text = (this.sentence + ' ' + phrase).toLowerCase().trim();
 
         if (this.isUpper) {
             text = text.charAt(0).toUpperCase() + text.slice(1);
         }
 
-        return ' ' + text;
+        return (' ' + text).replace(/\s+([!?.,;:])/g, "$1");
     }
 
     addPunctuation(text) {
