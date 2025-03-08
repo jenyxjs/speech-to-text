@@ -119,7 +119,7 @@ export class SpeechRecognition extends AbstractInput {
         var part1 = this.finalText.slice(0, this.cursorPosition);
         var part2 = this.finalText.slice(this.cursorPosition);
 
-        var needPoint = (this.isUpper && !this.sentence.trim().match(/[.,!?](?=\s|$)/g));
+        var needPoint = (this.isUpper && !this.sentence.trim().match(/[.,;!?](?=\s|$)/g));
         var point = needPoint ? '. ' : '';
 
         var text = part1 + this.sentence + point + part2
@@ -138,10 +138,10 @@ export class SpeechRecognition extends AbstractInput {
             text = text.charAt(0).toUpperCase() + text.slice(1);
         }
 
-        return (' ' + text).replace(/\s+([!?.,;:])/g, "$1");
+        return (' ' + text).replace(/\s+([.,!?:;])/g, "$1");
     }
 
-    addPunctuation(text) {
+    addPunctuation(text) {        
         var replacements = {
             // en
             "period": ".",
@@ -154,10 +154,10 @@ export class SpeechRecognition extends AbstractInput {
             "hyphen": "-",
 
             // es
+            "punto y coma": ";",
             "punto": ".",
             "coma": ",",
             "dos puntos": ":",
-            "punto y coma": ";",
             "por ciento": "%",
             "signo de interrogación": "?",
             "signo de exclamación": "!",
@@ -174,30 +174,30 @@ export class SpeechRecognition extends AbstractInput {
             "bindestrich": "-",
 
             // fr
+            "point d'exclamation": "!",
+            "point d'interrogation": "?",
+            "point virgule": ";",
             "point": ".",
             "virgule": ",",
             "deux points": ":",
-            "point virgule": ";",
             "pour cent": "%",
-            "point d'interrogation": "?",
-            "point d'exclamation": "!",
             "trait d'union": "-",
 
             // it
+            "punto interrogativo": "?",
+            "punto esclamativo": "!",
             "punto": ".",
             "virgola": ",",
             "due punti": ":",
             "punto e virgola": ";",
             "per cento": "%",
-            "punto interrogativo": "?",
-            "punto esclamativo": "!",
             "trattino": "-",
 
             // ru
+            "точка с запятой": ";",
             "точка": ".",
             "запятая": ",",
             "двоеточие": ":",
-            "точка с запятой": ";",
             "процент": "%",
             "вопросительный знак": "?",
             "восклицательный знак": "!",
