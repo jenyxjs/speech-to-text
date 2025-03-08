@@ -113,16 +113,17 @@ export class SpeechRecognition extends AbstractInput {
     getText() {
         var start = this.inputNode.selectionStart;
         var end = this.inputNode.selectionEnd;
-        this.finalText = this.finalText.slice(0, start) +
+        this.finalText =
+            this.finalText.slice(0, start) +
             this.finalText.slice(end);
 
         var part1 = this.finalText.slice(0, this.cursorPosition);
-        var part2 = this.finalText.slice(this.cursorPosition);
+        var part2 =  this.finalText.slice(this.cursorPosition);
 
         var needPoint = (this.isUpper && !this.sentence.trim().match(/[.,;!?](?=\s|$)/g));
-        var point = needPoint ? '. ' : '';
+        var point = needPoint ? '.' : '';
 
-        var text = part1 + this.sentence + point + part2
+        var text = part1 + ' ' + this.sentence + point + ' ' + part2;
         text = text
             .replace(/\ +/g, ' ')
             .replace(/\n /g, '\n');
