@@ -1,4 +1,5 @@
 import { Label } from '../../lib/jenyx/components/Label/Label.js';
+import { Button } from '../../lib/jenyx/components/Button/Button.js';
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
 import { Textarea } from '../../lib/jenyx/components/Input/Textarea.js';
 import { Input } from '../../lib/jenyx/components/Input/Input.js';
@@ -53,6 +54,29 @@ export class App extends AbstractApp {
                             'border: 1px solid var(--jn-border)',
                         ]
                     },
+                    pmarea: {
+                        class: Control,
+                        style: [
+                            'display: flex',
+                            'max-width: 32rem',
+                            'border-radius: 1em',
+                            'padding: 0 1rem',
+                            'background: var(--jn-primary)',
+                            'border: 1px solid var(--jn-border)',
+                        ],
+                    },
+                    button: {
+                        class: Button,
+                        text: 'Button',
+                        onclick: event => {
+                            const jsonContent = app.view.state.doc.toJSON();
+                            console.log("JSON Content:", jsonContent);
+
+                            const textContent = app.view.state.doc
+                                .textBetween(0, app.view.state.doc.content.size, '\n');
+                            console.log(textContent);
+                        }
+                    }
                 },
                 style: [
                     'padding: 1rem',
@@ -69,6 +93,12 @@ export class App extends AbstractApp {
                 id: 'G-ELXBKNLREG',
             },
         });
+
+        const state = PM.state.EditorState.create(
+            { schema: PM.schema_basic.schema, }
+        );
+
+        app.view = new PM.view.EditorView(this.layout.pmarea.node, { state });
     }
 }
 

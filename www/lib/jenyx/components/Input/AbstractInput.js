@@ -15,6 +15,7 @@ export class AbstractInput extends Control {
                 'box-sizing: border-box',
                 'width: 100%',
                 'border: 0',
+                'font-size: 1rem',
             ],
             options
         });

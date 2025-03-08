@@ -3,9 +3,9 @@
 // Use Conventional Commits for future commits
 
 ## demo.html
-- feat: add Input 
-- feat: add textarea 
-- feat: add contentEditable
+https://prosemirror.net/
+https://quilljs.com/
+
 
 ## Компонент
 - Перевод Гугл
