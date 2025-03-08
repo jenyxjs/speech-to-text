@@ -40,7 +40,7 @@ export class SpeechRecognition extends AbstractInput {
 
         this.inputNode.addEventListener('selectionchange', () => {
             this.inputCursorPosition = this.inputNode.selectionStart;
-            
+
             if (this.isFinal) {
                 this.finalText = this.inputNode.value;
             }
@@ -98,20 +98,27 @@ export class SpeechRecognition extends AbstractInput {
             var phrase = result[0].transcript.trim();
 
             this.sentence = this.getSentence(phrase);
-
-            var part1 = this.finalText.slice(0, this.cursorPosition);
-            var part2 = this.finalText.slice(this.cursorPosition);
-            var point = this.isUpper ? '. ' : ' ';
-
-            this.inputNode.value = this.autoFormat(
-                part1 + this.sentence + point + part2
-            );
+            this.insertText();
 
             if (this.isFinal) {
                 this.finalText = this.inputNode.value;
                 this.cursorPosition = this.inputCursorPosition;
             }
         }
+    }
+
+    insertText() {
+        var start = this.inputNode.selectionStart;
+        var end = this.inputNode.selectionEnd;
+        this.finalText = this.finalText.slice(0, start) +
+            this.finalText.slice(end);
+
+        var part1 = this.finalText.slice(0, this.cursorPosition);
+        var part2 = this.finalText.slice(this.cursorPosition);
+        var point = this.isUpper ? '. ' : ' ';
+
+        var text = part1 + this.sentence + point + part2
+        this.inputNode.value = text.replace(/\s{2,}/g, ' ').trim();
     }
 
     getSentence(phrase) {
@@ -122,10 +129,6 @@ export class SpeechRecognition extends AbstractInput {
         }
 
         return ' ' + text;
-    }
-
-    autoFormat(str) {
-        return str.replace(/\s{2,}/g, ' ').trim();
     }
 
     get isUpper() {
