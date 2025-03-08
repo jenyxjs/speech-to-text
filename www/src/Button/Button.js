@@ -23,7 +23,7 @@ export class Button extends ActiveControl {
                     'filter: brightness(1.05)',
                 ],
                 selected: [
-                    'filter: drop-shadow(0px 0px 2px black)',
+                    'filter: drop-shadow(0px 0px 1px red)',
                 ],
             },
             options

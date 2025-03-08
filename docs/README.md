@@ -4,7 +4,6 @@
 
 ## app.html
 
-- feat: red point for mic on
 
 ## demo.html
 - feat: add GoogleAnalytics
