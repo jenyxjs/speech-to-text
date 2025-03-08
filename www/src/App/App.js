@@ -1,7 +1,8 @@
 import { AbstractApp } from './AbstractApp.js'
 import { InitCssTheme } from '../Css/InitCssTheme.js';
-import { LinkButton } from '../Button/LinkButton.js';
+import { GoogleAnalytics } from '../GoogleAnalytics/GoogleAnalytics.js';
 import { SpeakArea } from '../SpeakArea/SpeakArea.js';
+import { LinkButton } from '../Button/LinkButton.js';
 
 export class App extends AbstractApp {
 	constructor() {
@@ -25,6 +26,10 @@ export class App extends AbstractApp {
 				style: [
 					'padding: 1.25rem'
 				],
+			},
+			googleAnalytics: {
+				class: GoogleAnalytics,
+				id: 'G-ELXBKNLREG',
 			},
 		});
 	}

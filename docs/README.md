@@ -1,13 +1,18 @@
 # TODO
 
+// Use Conventional Commits for future commits
+
 ## app.html
-
-- feat: add ga
-- feat: About, Settings
-- feat: add select language (button panel)
-
+- feat: punctuation marks
 
 ## demo.html
+- feat: add GoogleAnalytics
+- Перевод Гугл
+- Пунктуация ИИ
+- Ответ ИИ
 
 ## extension
+- feat: About
+- feat: Settings
+- feat: add select language
 - feat: Link to Chrome extention

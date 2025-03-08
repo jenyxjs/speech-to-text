@@ -103,7 +103,7 @@ export class SpeechRecognition extends AbstractInput {
 
             if (this.isFinal) {
                 this.finalText = this.inputNode.value;
-                this.cursorPosition += this.sentence.length;
+                this.cursorPosition += this.sentence.length + 1;
             }
         }
     }
@@ -124,7 +124,9 @@ export class SpeechRecognition extends AbstractInput {
         var point = this.isUpper ? '. ' : ' ';
 
         var text = part1 + this.sentence + point + part2
-        this.inputNode.value = text.replace(/\s{2,}/g, ' ').trim();
+        text = text.replace(/\ {2,}/g, ' ').replace(/\n /g, '\n').trim();
+        
+        this.inputNode.value = text;
     }
 
     getSentence(phrase) {
@@ -140,6 +142,6 @@ export class SpeechRecognition extends AbstractInput {
     get isUpper() {
         var part = this.finalText.slice(0, this.cursorPosition).trim();
         var lastChar = part[part.length - 1];
-        return !lastChar || lastChar == '.';
+        return !lastChar || lastChar == '.' ;
     }
 }
