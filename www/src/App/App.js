@@ -20,7 +20,7 @@ export class App extends AbstractApp {
 			linkButton: {
 				class: LinkButton,
 				parentNode: document.body,
-				text: 'Chrome extension',
+				text: 'Download Chrome extension',
 				href: 'https://github.com/jenyxjs/speech-to-text',
 				style: [
 					'padding: 1.25rem'

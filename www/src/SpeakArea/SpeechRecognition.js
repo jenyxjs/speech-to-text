@@ -12,6 +12,7 @@ export class SpeechRecognition extends AbstractInput {
             sentence: '',
             finalText: '',
 
+            isFinal: false,
             isActive: false,
             currentState: 'stop',
 
@@ -39,6 +40,10 @@ export class SpeechRecognition extends AbstractInput {
 
         this.inputNode.addEventListener('selectionchange', () => {
             this.inputCursorPosition = this.inputNode.selectionStart;
+            
+            if (this.isFinal) {
+                this.finalText = this.inputNode.value;
+            }
         });
 
         this.inputNode.addEventListener('click', () => {
@@ -89,6 +94,7 @@ export class SpeechRecognition extends AbstractInput {
 
         for (var i = event.resultIndex; i < event.results.length; i++) {
             var result = event.results[i];
+            this.isFinal = result.isFinal;
             var phrase = result[0].transcript.trim();
 
             this.sentence = this.getSentence(phrase);
@@ -101,7 +107,7 @@ export class SpeechRecognition extends AbstractInput {
                 part1 + this.sentence + point + part2
             );
 
-            if (result.isFinal) {
+            if (this.isFinal) {
                 this.finalText = this.inputNode.value;
                 this.cursorPosition = this.inputCursorPosition;
             }
