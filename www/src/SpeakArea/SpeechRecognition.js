@@ -99,12 +99,18 @@ export class SpeechRecognition extends AbstractInput {
 
             this.sentence = this.getSentence(phrase);
             this.insertText();
+            this.updateSelectionRange();
 
             if (this.isFinal) {
                 this.finalText = this.inputNode.value;
-                this.cursorPosition = this.inputCursorPosition;
+                this.cursorPosition += this.sentence.length;
             }
         }
+    }
+
+    updateSelectionRange() {
+        var position = this.cursorPosition + this.sentence.length;
+        this.inputNode.setSelectionRange(position, position);
     }
 
     insertText() {
