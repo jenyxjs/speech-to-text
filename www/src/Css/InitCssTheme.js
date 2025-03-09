@@ -12,7 +12,7 @@ export class InitCssTheme extends Component {
                 'max-height: 100%',
                 'margin: 0',
                 'font-family: sans-serif',
-                'font-size: 16px',
+                'font-size: 15px',
             ]
         });
 
