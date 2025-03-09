@@ -7,6 +7,7 @@ import { AbstractApp } from '../AbstractApp/AbstractApp.js'
 import { InitCssTheme } from '../Css/InitCssTheme.js';
 import { GoogleAnalytics } from '../GoogleAnalytics/GoogleAnalytics.js';
 import { LinkButton } from '../Button/LinkButton.js';
+import { SpeechRecognition } from '../SpeakArea/SpeechRecognition.js';
 
 export class App extends AbstractApp {
     constructor() {
@@ -24,7 +25,7 @@ export class App extends AbstractApp {
             'background: var(--jn-primary)',
             'border: 1px solid var(--jn-border)',
         ];
-        
+
         super({
             layout: {
                 class: Control,
@@ -88,16 +89,49 @@ export class App extends AbstractApp {
                 class: GoogleAnalytics,
                 id: 'G-ELXBKNLREG',
             },
+            speechRecognition: {
+                class: SpeechRecognition,
+            }
         });
-
-
         App.init.call(this);
     }
 
+
     static init() {
         this.initpm();
+
+        document.addEventListener('focusin', (event) => {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'input' ||
+                target.tagName.toLowerCase() === 'textarea' ||
+                target.isContentEditable
+            ) {
+                this.inputFocus(target);
+            }
+        });
     }
 
+/*
+ПРОМТ:
+1. Отвечай только кодом без пояснений.
+2. Пользователь ожитает, что код между START и STOP может быть улучшен.
+*/
+    // START
+    // STOP
+    
+    inputFocus(target) {
+        const sr = this.speechRecognition;
+        sr.inputNode = target;
+        sr.finalText = target.value;
+        sr.updatePosition();
+
+        if (sr.isActive) {
+            sr.restart();
+        } else {
+            sr.isActive = true;
+        }
+    }
+    
     initpm() {
         var view = new PM.view.EditorView(this.layout.pm.node, {
             state: PM.state.EditorState.create(
@@ -110,6 +144,7 @@ export class App extends AbstractApp {
         // ));
         //console.log("JSON Content:", view.state.doc.toJSON());
     }
+
 }
 
 new App();

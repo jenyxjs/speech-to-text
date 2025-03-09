@@ -39,11 +39,7 @@ export class SpeechRecognition extends AbstractInput {
         await this.wait('inputNode');
 
         this.inputNode.addEventListener('selectionchange', () => {
-            this.inputCursorPosition = this.inputNode.selectionStart;
-
-            if (this.isFinal) {
-                this.finalText = this.inputNode.value;
-            }
+            this.updatePosition();
         });
 
         this.inputNode.addEventListener('click', () => {
@@ -53,6 +49,14 @@ export class SpeechRecognition extends AbstractInput {
         this.inputNode.addEventListener('keyup', () => {
             this.cursorPosition = this.inputNode.selectionStart;
         });
+    }
+
+    updatePosition() {
+        this.inputCursorPosition = this.inputNode.selectionStart;
+
+        if (this.isFinal) {
+            this.finalText = this.inputNode.value;
+        }
     }
 
     recognitionInit() {
@@ -72,7 +76,7 @@ export class SpeechRecognition extends AbstractInput {
         this.bind('isActive', this, 'restart', { run: true });
     }
 
-    async restart() {
+    async restart(isActive) {
         if (this.currentState == 'start') {
             this.recognition.stop();
         } else {
@@ -101,7 +105,7 @@ export class SpeechRecognition extends AbstractInput {
             this.inputNode.value = this.getText();
 
             var position = this.cursorPosition + this.sentence.length;
-            this.inputNode.setSelectionRange(position, position);
+            this.inputNode?.setSelectionRange(position, position);
 
             if (this.isFinal) {
                 this.finalText = this.inputNode.value;
