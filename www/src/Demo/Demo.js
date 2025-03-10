@@ -17,7 +17,6 @@ export class App extends AbstractApp {
             'max-width: 36rem',
             'border-radius: 1em',
             'padding: 1rem',
-            'background: var(--jn-primary)',
             'border: 1px solid var(--jn-border)',
         ];
 
