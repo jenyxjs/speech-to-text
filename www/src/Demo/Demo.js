@@ -28,14 +28,8 @@ export class App extends AbstractApp {
                 children: {
                     titleLabel: {
                         class: Label,
-                        text: 'Jenyx Speech to Text - Demo',
+                        text: 'Jenyx Speech to Text<br>Demonstration',
                         style: ['font-size: 1.5rem',],
-                    },
-                    linkButton: {
-                        class: LinkButton,
-                        text: 'Download Chrome extension',
-                        href: 'https://github.com/jenyxjs/speech-to-text',
-                        style: ['font-size: .9rem', 'margin-top: 1rem',],
                     },
 
                     textareaTitle: { class: TitleLabel, text: 'Textarea', },
@@ -44,11 +38,17 @@ export class App extends AbstractApp {
                     inputTitle: { class: TitleLabel, text: 'Input', },
                     input: { class: Input, style: inputStyle },
 
+                    linkButton: {
+                        class: LinkButton,
+                        text: 'Download Chrome extension',
+                        href: 'https://github.com/jenyxjs/speech-to-text',
+                        style: ['font-size: 1rem', 'margin-top: 1rem',],
+                    },
+
                 },
                 style: [
                     'display: flex',
                     'flex-direction: column',
-                    'gap: .5rem',
                     'padding: 1rem',
                 ]
             },

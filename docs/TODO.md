@@ -1,7 +1,6 @@
 # TODO
 
 - Нарисовать значок к программе
-- Add description in html
 
 
 ## Component
