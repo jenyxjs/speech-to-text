@@ -25,12 +25,12 @@ export class SpeechRecognition extends AbstractInput {
 
         this.recognition.interimResults = true;
         this.recognition.continuous = true;
-        this.bind('lang', this.recognition);
 
         SpeechRecognition.init.call(this);
     }
 
     static async init() {
+        this.bind('lang', this.recognition);
         this.recognitionInit();
         this.inputInit();
     };
@@ -76,7 +76,7 @@ export class SpeechRecognition extends AbstractInput {
         this.bind('isActive', this, 'restart', { run: true });
     }
 
-    async restart(isActive) {
+    async restart() {
         if (this.currentState == 'start') {
             this.recognition.stop();
         } else {

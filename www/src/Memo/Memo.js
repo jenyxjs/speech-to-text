@@ -14,7 +14,7 @@ export class App extends AbstractApp {
 				class: SpeakArea,
 				parentNode: document.body,
 				style: [
-					'max-width: 32rem',
+					'max-width: 36rem',
 					'padding: 1rem',
 				]
 			},
