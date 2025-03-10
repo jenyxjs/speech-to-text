@@ -66,20 +66,20 @@ export class App extends AbstractApp {
         App.init.call(this);
     }
 
-
     static init() {
         document.addEventListener('focusin', (event) => {
-            const target = event.target;
-            if (target.tagName.toLowerCase() === 'input' ||
-                target.tagName.toLowerCase() === 'textarea' ||
-                target.isContentEditable
-            ) {
-                this.inputFocus(target);
+            if (this.isInputElement(event.target)) {
+                this.attachInput(event.target);
             }
         });
     }
 
-    inputFocus(target) {
+    isInputElement(target) {
+        const tagName = target.tagName.toLowerCase();
+        return tagName === 'input' || tagName === 'textarea' // || target.isContentEditable;
+    }
+
+    attachInput(target) {
         this.speechRecognition.inputNode = target;
         this.speechRecognition.finalText = target.value;
         this.speechRecognition.updatePosition();
