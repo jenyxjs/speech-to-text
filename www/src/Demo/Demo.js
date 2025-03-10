@@ -69,7 +69,7 @@ export class App extends AbstractApp {
     static init() {
         document.addEventListener('focusin', (event) => {
             if (this.isInputElement(event.target)) {
-                this.attachInput(event.target);
+                this.speechRecognition.inputNode = event.target;
             }
         });
     }
@@ -77,16 +77,6 @@ export class App extends AbstractApp {
     isInputElement(target) {
         var tagName = target.tagName.toLowerCase();
         return tagName === 'input' || tagName === 'textarea';
-    }
-
-    attachInput(target) {
-        this.speechRecognition.inputNode = target;
-
-        if (this.speechRecognition.isActive) {
-            this.speechRecognition.restart();
-        } else {
-            this.speechRecognition.isActive = true;
-        }
     }
 }
 

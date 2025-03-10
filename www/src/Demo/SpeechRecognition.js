@@ -32,39 +32,8 @@ export class SpeechRecognition extends AbstractInput {
 
     static async init() {
         this.recognitionInit();
-
-        this.on('inputNode', event => {
-            this.inputInit();
-        }, { run: true });
+        this.bind('inputNode', this, 'inputInit');
     };
-
-    async inputInit() {
-        await this.wait('inputNode');
-
-        this.reset()
-
-        this.inputNode.addEventListener('selectionchange', () => {
-            this.updatePosition();
-        });
-
-        this.inputNode.addEventListener('click', () => {
-            this.cursorPosition = this.inputNode.selectionStart;
-        });
-
-        this.inputNode.addEventListener('keyup', () => {
-            this.cursorPosition = this.inputNode.selectionStart;
-        });
-        
-        this.finalText = this.inputNode.value;
-    }
-
-    updatePosition() {
-        this.inputCursorPosition = this.inputNode.selectionStart;
-
-        if (this.isFinal) {
-            this.finalText = this.inputNode.value;
-        }
-    }
 
     recognitionInit() {
         this.recognition.addEventListener('result', event => {
@@ -83,11 +52,36 @@ export class SpeechRecognition extends AbstractInput {
         this.bind('isActive', this, 'restart', { run: true });
     }
 
-    async restart(isActive) {
+    async inputInit() {
+        this.inputNode.addEventListener('selectionchange', () => {
+            this.updatePosition();
+        });
+
+        this.inputNode.addEventListener('click', () => {
+            this.cursorPosition = this.inputNode.selectionStart;
+        });
+
+        this.inputNode.addEventListener('keyup', () => {
+            this.cursorPosition = this.inputNode.selectionStart;
+        });
+
+        this.restart();
+        this.reset();
+    }
+
+    updatePosition() {
+        this.inputCursorPosition = this.inputNode.selectionStart;
+
+        if (this.isFinal) {
+            this.finalText = this.inputNode.value;
+        }
+    }
+
+    async restart() {
         if (this.currentState == 'start') {
             this.recognition.stop();
         } else {
-            this.isActive && setTimeout(() => {
+            setTimeout(() => {
                 this.recognition.start();
             }, 100);
         }
@@ -97,6 +91,7 @@ export class SpeechRecognition extends AbstractInput {
         this.sentence = '';
         this.cursorPosition = 0;
         this.inputCursorPosition = 0;
+        this.isFinal = true;
         this.updatePosition();
     }
 
