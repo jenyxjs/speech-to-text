@@ -75,14 +75,12 @@ export class App extends AbstractApp {
     }
 
     isInputElement(target) {
-        const tagName = target.tagName.toLowerCase();
-        return tagName === 'input' || tagName === 'textarea' // || target.isContentEditable;
+        var tagName = target.tagName.toLowerCase();
+        return tagName === 'input' || tagName === 'textarea';
     }
 
     attachInput(target) {
         this.speechRecognition.inputNode = target;
-        this.speechRecognition.finalText = target.value;
-        this.speechRecognition.updatePosition();
 
         if (this.speechRecognition.isActive) {
             this.speechRecognition.restart();

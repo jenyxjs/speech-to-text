@@ -32,11 +32,16 @@ export class SpeechRecognition extends AbstractInput {
 
     static async init() {
         this.recognitionInit();
-        this.inputInit();
+
+        this.on('inputNode', event => {
+            this.inputInit();
+        }, { run: true });
     };
 
     async inputInit() {
         await this.wait('inputNode');
+
+        this.reset()
 
         this.inputNode.addEventListener('selectionchange', () => {
             this.updatePosition();
@@ -49,6 +54,8 @@ export class SpeechRecognition extends AbstractInput {
         this.inputNode.addEventListener('keyup', () => {
             this.cursorPosition = this.inputNode.selectionStart;
         });
+        
+        this.finalText = this.inputNode.value;
     }
 
     updatePosition() {
@@ -87,10 +94,15 @@ export class SpeechRecognition extends AbstractInput {
     }
 
     reset() {
+        this.sentence = '';
+        this.cursorPosition = 0;
+        this.inputCursorPosition = 0;
+        this.updatePosition();
+    }
+
+    clear() {
         this.finalText = '';
         this.inputNode.value = '';
-        this.cursorPosition = 0;
-        this.restart();
     }
 
     update(event) {
@@ -122,7 +134,7 @@ export class SpeechRecognition extends AbstractInput {
             this.finalText.slice(end);
 
         var part1 = this.finalText.slice(0, this.cursorPosition);
-        var part2 =  this.finalText.slice(this.cursorPosition);
+        var part2 = this.finalText.slice(this.cursorPosition);
 
         var needPoint = (this.isUpper && !this.sentence.trim().match(/[.,;!?](?=\s|$)/g));
         var point = needPoint ? '.' : '';
@@ -132,7 +144,7 @@ export class SpeechRecognition extends AbstractInput {
             .replace(/\ +/g, ' ')
             .replace(/\n /g, '\n');
 
-       return text.trim();
+        return text.trim();
     }
 
     getSentence(phrase) {
@@ -146,7 +158,7 @@ export class SpeechRecognition extends AbstractInput {
         return (' ' + text).replace(/\s+([.,!?:;])/g, "$1");
     }
 
-    addPunctuation(text) {        
+    addPunctuation(text) {
         var replacements = {
             // en
             "period": ".",
