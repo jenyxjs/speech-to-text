@@ -110,7 +110,12 @@ export class App extends AbstractApp {
             }
         });
     }
-
+/**
+           .ProseMirror {
+            outline: none;
+        }
+            <script src="lib/prosemirror/prosemirror.js"></script>
+*/
 /*
 ПРОМТ:
 1. Отвечай только кодом без пояснений.

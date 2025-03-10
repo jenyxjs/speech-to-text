@@ -1,7 +1,7 @@
 import { AbstractApp } from '../AbstractApp/AbstractApp.js'
 import { InitCssTheme } from '../Css/InitCssTheme.js';
 import { GoogleAnalytics } from '../GoogleAnalytics/GoogleAnalytics.js';
-import { SpeakArea } from '../SpeakArea/SpeakArea.js';
+import { SpeakArea } from './SpeakArea.js';
 import { LinkButton } from '../Button/LinkButton.js';
 
 export class App extends AbstractApp {

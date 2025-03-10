@@ -3,6 +3,10 @@
 // Переведи все на английский
 // Названия пунктов в стиле Conventional Commits (for future commits)
 
+
+- demo.html
+- memo.html
+
 ## Component
 - feat: Toggle microphone on/off  
 - feat: Copy text to clipboard  
@@ -24,6 +28,9 @@
 - feat: Add settings page  
 - feat: Add language selection dropdown  
 - feat: Link to Chrome extension  
+
+- Нарисовать значок к программе
+- <meta name="description" content="Jenyx Speech to Text - Demo">
 
 # /docs
 - doc: Installation instructions from GitHub  
