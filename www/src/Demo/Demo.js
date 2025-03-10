@@ -1,21 +1,16 @@
-import { Label } from '../../lib/jenyx/components/Label/Label.js';
-import { Button } from '../../lib/jenyx/components/Button/Button.js';
-import { Control } from '../../lib/jenyx/components/Control/Control.js';
-import { Textarea } from '../../lib/jenyx/components/Input/Textarea.js';
-import { Input } from '../../lib/jenyx/components/Input/Input.js';
 import { AbstractApp } from '../AbstractApp/AbstractApp.js'
 import { InitCssTheme } from '../Css/InitCssTheme.js';
 import { GoogleAnalytics } from '../GoogleAnalytics/GoogleAnalytics.js';
+import { Control } from '../../lib/jenyx/components/Control/Control.js';
+import { Label } from '../../lib/jenyx/components/Label/Label.js';
 import { LinkButton } from '../Button/LinkButton.js';
-import { SpeechRecognition } from '../SpeakArea/SpeechRecognition.js';
+import { Input } from '../../lib/jenyx/components/Input/Input.js';
+import { Textarea } from '../../lib/jenyx/components/Input/Textarea.js';
+import { SpeechRecognition } from './SpeechRecognition.js';
+import { TitleLabel } from './TitleLabel.js';
 
 export class App extends AbstractApp {
     constructor() {
-
-        var titleStyle = [
-            'margin-top: 2rem',
-            'font-size: 0.9rem',
-        ];
 
         var inputStyle = [
             'display: flex',
@@ -34,52 +29,27 @@ export class App extends AbstractApp {
                     titleLabel: {
                         class: Label,
                         text: 'Jenyx Speech to Text - Demo',
-                        style: [
-                            'font-size: 1.5rem',
-                        ],
+                        style: ['font-size: 1.5rem',],
                     },
                     linkButton: {
                         class: LinkButton,
                         text: 'Download Chrome extension',
                         href: 'https://github.com/jenyxjs/speech-to-text',
-                        style: [
-                            'font-size: .9rem',
-                            'margin-top: 1rem',
-                        ],
+                        style: ['font-size: .9rem', 'margin-top: 1rem',],
                     },
-                    textareaTitle: {
-                        class: Label,
-                        text: 'Textarea',
-                        style: titleStyle
-                    },
-                    textarea: {
-                        class: Textarea,
-                        style: inputStyle
-                    },
-                    inputTitle: {
-                        class: Label,
-                        text: 'Input',
-                        style: titleStyle
-                    },
-                    input: {
-                        class: Input,
-                        style: inputStyle
-                    },
-                    pmTitle: {
-                        class: Label,
-                        text: 'ProseMirror',
-                        style: titleStyle
-                    },
-                    pm: {
-                        class: Control,
-                        style: inputStyle.join(';') + ';padding: 0 1rem',
-                    }
+
+                    textareaTitle: { class: TitleLabel, text: 'Textarea', },
+                    textarea: { class: Textarea, style: inputStyle },
+
+                    inputTitle: { class: TitleLabel, text: 'Input', },
+                    input: { class: Input, style: inputStyle },
+
                 },
                 style: [
-                    'padding: 1rem',
                     'display: flex',
                     'flex-direction: column',
                     'gap: .5rem',
+                    'padding: 1rem',
                 ]
             },
             initCssTheme: {
@@ -98,8 +68,6 @@ export class App extends AbstractApp {
 
 
     static init() {
-        this.initpm();
-
         document.addEventListener('focusin', (event) => {
             const target = event.target;
             if (target.tagName.toLowerCase() === 'input' ||
@@ -110,46 +78,18 @@ export class App extends AbstractApp {
             }
         });
     }
-/**
-           .ProseMirror {
-            outline: none;
-        }
-            <script src="lib/prosemirror/prosemirror.js"></script>
-*/
-/*
-ПРОМТ:
-1. Отвечай только кодом без пояснений.
-2. Пользователь ожитает, что код между START и STOP может быть улучшен.
-*/
-    // START
-    // STOP
-    
+
     inputFocus(target) {
-        const sr = this.speechRecognition;
-        sr.inputNode = target;
-        sr.finalText = target.value;
-        sr.updatePosition();
+        this.speechRecognition.inputNode = target;
+        this.speechRecognition.finalText = target.value;
+        this.speechRecognition.updatePosition();
 
-        if (sr.isActive) {
-            sr.restart();
+        if (this.speechRecognition.isActive) {
+            this.speechRecognition.restart();
         } else {
-            sr.isActive = true;
+            this.speechRecognition.isActive = true;
         }
     }
-    
-    initpm() {
-        var view = new PM.view.EditorView(this.layout.pm.node, {
-            state: PM.state.EditorState.create(
-                { schema: PM.schema_basic.schema, }
-            )
-        });
-
-        // console.log(view.state.doc.textBetween(
-        //     0, view.state.doc.content.size, '\n'
-        // ));
-        //console.log("JSON Content:", view.state.doc.toJSON());
-    }
-
 }
 
 new App();
