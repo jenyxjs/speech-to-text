@@ -1,4 +1,5 @@
 import { AbstractInput } from '../../lib/jenyx/components/Input/AbstractInput.js';
+import { MenuButton } from './MenuButton.js';
 
 export class SpeechRecognition extends AbstractInput {
     constructor(options) {
@@ -20,6 +21,7 @@ export class SpeechRecognition extends AbstractInput {
                 class: window.SpeechRecognition
                     || window.webkitSpeechRecognition,
             },
+            mainButton: { class: MenuButton, },
             options
         });
 

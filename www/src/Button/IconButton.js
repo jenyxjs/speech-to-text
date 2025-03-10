@@ -1,6 +1,6 @@
 import { ActiveControl } from '../../lib/jenyx/components/ActiveControl/ActiveControl.js';
 
-export class Button extends ActiveControl {
+export class IconButton extends ActiveControl {
     constructor(options) {
         super({
             style: [

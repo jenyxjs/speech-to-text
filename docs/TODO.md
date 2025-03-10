@@ -1,11 +1,14 @@
 # TODO
 
-- Нарисовать значок к программе
+## Кнопка и панель
 
-
-## Component
+- Добавить значок микрофона на кнопку
+- Позиционировать кнопку
+- Добавить панель при щелчке выезжает влево
 - feat: Toggle microphone on/off  
 - feat: Copy text to clipboard  
+- feat: add settings button
+
 
 ## Extension
 - feat: Link to Chrome extension  

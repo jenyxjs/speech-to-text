@@ -1,6 +1,6 @@
 import { Control } from '../../lib/jenyx/components/Control/Control.js';
 import { Textarea } from '../../lib/jenyx/components/Input/Textarea.js';
-import { Button } from '../Button/Button.js';
+import { IconButton } from '../Button/IconButton.js';
 import { SpeechRecognition } from './SpeechRecognition.js';
 import { MIC_SVG } from '../Assets/MIC_SVG.js';
 import { COPY_SVG } from '../Assets/COPY_SVG.js';
@@ -24,11 +24,11 @@ export class SpeakArea extends Control {
                     class: Control,
                     children: {
                         micButton: {
-                            class: Button,
+                            class: IconButton,
                             text: MIC_SVG,
                         },
                         copyButton: {
-                            class: Button,
+                            class: IconButton,
                             text: COPY_SVG,
                         },
                     },
